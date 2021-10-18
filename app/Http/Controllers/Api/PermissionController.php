@@ -18,7 +18,7 @@ class PermissionController extends Controller
         return response()->json([
             'status'=> true,
             'message'=> 'Permission Apporve',
-            'data' => Permission::all()
+            'data' => Permission::with('roles')->orderBy('id', 'desc')->get()
         ]);
     }
 
@@ -40,7 +40,16 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        Permission::create($request->only('name'));
+        $permission = Permission::where('name', $request->name)->first();
+        if(isset($permission->id)) {
+            return response()->json([
+                'status' => false ,
+                'message' => 'Permission Already Exist',
+                'data' => []
+            ]);
+        }
+        $permission = Permission::create(['guard_name' => 'api' , 'name' => $request->name]);
+        $permission->asyncRole($request->roles);
         return response()->json([
             'status' => true ,
             'message' => 'Permission Create Successfully',

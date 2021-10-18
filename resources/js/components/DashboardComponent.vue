@@ -77,13 +77,20 @@
                                 <b-button v-b-modal="'user-add'">Add User</b-button>
                             </div>
                             <div class="col-md-3 col-sm-4 col-xs-3">
-                                <input @change="getUserList" type="text" v-model="userSearchValue" class="form-select shadow-none row border-top"/>
+                                <input @change="getUserList()" type="text" v-model="userSearchValue" class="form-select shadow-none row border-top"/>
                             </div>
                             <div class="col-md-3 col-sm-4 col-xs-3" id="userFilterDiv">
-                                <select @change="getUserList" v-model="userFilterValue" class="form-select shadow-none row border-top">
-                                    <option value="all">All</option>
+                                <select @change="getUserList()" v-model="userFilterValue" class="form-select shadow-none row border-top">
+                                    <option value="" selected>All</option>
                                     <option value="verified">Verified</option>
                                     <option value="notverified">Not Verified</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-4 col-xs-3" id="userPaginationDiv">
+                                <select @change="getUserList()" v-model="pageCount" class="form-select shadow-none row border-top">
+                                    <option value="2" selected>2</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
                                 </select>
                             </div>
                         </div>
@@ -106,54 +113,19 @@
                                         <td class="txt-oflo">{{ user.email_verified_at == null ? 'Not Verified' : 'Verified' }}</td>
                                         <td>
                                             <button @click="getSingleUserData(user.id)" class="btn btn-primary">View</button>
+                                            <button class="btn btn-warning"><router-link :to="{ path: '/users/edit/'+ user.id }">Edit</router-link></button>
                                             <button @click="deleteUser(user.id)" class="btn btn-danger">Delete</button>
-
                                         </td>
                                     </tr>
-                                    <!-- <tr>
-                                        <td>2</td>
-                                        <td class="txt-oflo">Real Homes WP Theme</td>
-                                        <td>EXTENDED</td>
-                                        <td class="txt-oflo">April 19, 2021</td>
-                                        <td><span class="text-info">$1250</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td class="txt-oflo">Ample Admin</td>
-                                        <td>EXTENDED</td>
-                                        <td class="txt-oflo">April 19, 2021</td>
-                                        <td><span class="text-info">$1250</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td class="txt-oflo">Medical Pro WP Theme</td>
-                                        <td>TAX</td>
-                                        <td class="txt-oflo">April 20, 2021</td>
-                                        <td><span class="text-danger">-$24</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td class="txt-oflo">Hosting press html</td>
-                                        <td>SALE</td>
-                                        <td class="txt-oflo">April 21, 2021</td>
-                                        <td><span class="text-success">$24</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>6</td>
-                                        <td class="txt-oflo">Digital Agency PSD</td>
-                                        <td>SALE</td>
-                                        <td class="txt-oflo">April 23, 2021</td>
-                                        <td><span class="text-danger">-$14</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>7</td>
-                                        <td class="txt-oflo">Helping Hands WP Theme</td>
-                                        <td>MEMBER</td>
-                                        <td class="txt-oflo">April 22, 2021</td>
-                                        <td><span class="text-success">$64</span></td>
-                                    </tr> -->
                                 </tbody>
                             </table>
+                            <nav aria-label="Page navigation text-center">
+                                <ul class="pagination text-center">
+                                    <li class="page-item" :class="[{disabled: !pagination.prev_page_url}]"><a @click="getUserList(pagination.prev_page_url)" class="page-link" href="#">Previous</a></li>
+                                    <li class="page-item disabled"><a class="page-link text-dark" href="#">Page {{ pagination.current_page }} of {{ pagination.last_page }}</a></li>
+                                    <li class="page-item" :class="[{disabled: !pagination.next_page_url}]"><a class="page-link" href="#" @click="getUserList(pagination.next_page_url)">Next</a></li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
@@ -348,7 +320,9 @@ export default {
     },
     data() {
         return {
+            pagination: {},
             userCount: 0,
+            pageCount: 2,
             users: [],
             user: {
                 id: '',
@@ -359,7 +333,7 @@ export default {
             roleList:[],
             roleId: '',
             userSearchValue: '',
-            userFilterValue: 'all'
+            userFilterValue: ''
         }
     },
     methods: {
@@ -368,9 +342,19 @@ export default {
                 this.userCount = data.data.data.userCount;
             });
         },
-        getUserList() {
-            axios.get('/api/users?search='+this.userSearchValue+'&filter='+this.userFilterValue).then(data=> {
-                this.users = data.data.data
+        getUserList(page_url='') {
+            page_url = page_url == '' ? '/api/users?search='+this.userSearchValue+'&filter='+this.userFilterValue+'&pageCount='+this.pageCount : page_url+'&search='+this.userSearchValue+'&filter='+this.userFilterValue+'&pageCount='+this.pageCount;
+            axios.get(page_url).then(response=> {
+                let meta = response.data.meta;
+                let links = response.data.links;
+                let pagination = {
+                    current_page: meta.current_page,
+                    last_page: meta.last_page,
+                    next_page_url: links.next,
+                    prev_page_url: links.prev
+                };
+                this.pagination = pagination;
+                this.users = response.data.data
             });
         },
         getSingleUserData(userId){
@@ -404,6 +388,9 @@ export default {
 </script>
 <style scoped>
 #userFilterDiv {
+    margin-left: 20px;
+}
+#userPaginationDiv {
     margin-left: 20px;
 }
 </style>

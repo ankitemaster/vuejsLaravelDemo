@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -16,18 +18,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query();
-        if($request->get('search')) {
-            $query->where('name', 'like', '%'.$request->get('search').'%');
-        }
-        if($request->get('filter')) {
-            // $query->like('name', $request->get('search'));
-        }
-        return response()->json([
-            'status' => true,
-            'message' => 'User List Get Successfully',
-            'data' => $query->orderBy('id', 'desc')->get()
-        ]);
+        $search = $request->get('search', null);
+        $filter = $request->get('filter', null);
+        $pageCount = $request->get('pageCount', 2);
+        $users = User::when($search, function($query) use($search) {
+            $query->where('name', 'like', '%'.$search.'%');
+        })->when($filter, function($query1) use ($filter) {
+            if($filter == 'verified') {
+                $query1->where('email_verified_at', "!=", null);
+            } else {
+                $query1->where('email_verified_at', null);
+            }
+        })->orderBy('id', 'desc')->paginate($pageCount);
+        return UserResource::collection($users);
     }
 
     /**
@@ -77,7 +80,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::where('id', $id)->first();
+        $user = User::with('roles')->where('id', $id)->first();
         if($user->profile) {
             $user->profile = url('images').'/'.$user->profile;
         }
@@ -129,6 +132,9 @@ class UserController extends Controller
         if($user->profile) {
             $user->profile = url('images').'/'.$user->profile;
         }
+        if($request->role) {
+            $user->assignRole($request->role);
+        }
         return response()->json([
             'status' => true,
             'message' => 'User Updated Successfully',
@@ -150,5 +156,13 @@ class UserController extends Controller
             'message' => 'User Deleted Successfully',
             'data' => []
         ]);
+    }
+
+    /**
+     * check permission
+     */
+    public function checkPermission($permission) {
+        $user = User::find(auth()->user()->id);
+        return  $user->hasRole('Super Admin') ? true : $user->hasPermissionTo($permission);
     }
 }

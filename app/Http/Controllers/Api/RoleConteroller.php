@@ -18,7 +18,7 @@ class RoleConteroller extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Role get successfully',
-            'data' => Role::orderBy('id', 'desc')->get()
+            'data' => Role::with('permissions')->orderBy('id', 'desc')->get()
         ]);
     }
 
@@ -40,7 +40,16 @@ class RoleConteroller extends Controller
      */
     public function store(Request $request)
     {
-        Role::create($request->only('name'));
+        $role = Role::where('name', $request->name)->first();
+        if(isset($role->id)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Role Already Exist',
+                'data' => []
+            ]);
+        }
+        $role = Role::create(['guard_name' => 'api' , 'name' => $request->name]);
+        $role->syncPermissions($request->permissions);
         return response()->json([
             'status' => true,
             'message' => 'Role created successfully',

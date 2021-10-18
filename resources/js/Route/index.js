@@ -24,7 +24,15 @@ const routes = [
             auth: true
         },
         component: () => import('./../components/RoleAndPermission')
-    }
+    },
+    {
+        path: '/users/edit/:id',
+        name: 'users-edit',
+        meta: {
+            auth: true
+        },
+        component: () => import('./../components/EditUserComponent')
+    },
 ];
 
 const router = new VueRouter({

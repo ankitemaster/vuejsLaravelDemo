@@ -6,6 +6,7 @@ import Toasted from 'vue-toasted';
 
 import BootstrapVue from 'bootstrap-vue';
 import Vue from 'vue';
+import axios from 'axios';
 
 require('./bootstrap');
 
@@ -19,6 +20,24 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.use(Toasted, {
     duration: 1500
+});
+
+// var mixin = Vue.mixin("can", (permissionName) => {
+//     axios.get('/api/users/permission/'+permissionName).then((response) => {
+//         console.log(response.data);
+//         return response.data;
+//     })
+// });
+
+Vue.mixin({
+    methods: {
+        can(permissionName) {
+            axios.get('/api/users/permission/'+permissionName).then((response) => {
+                console.log(response.data);
+                return response.data;
+            });
+        }
+    }
 });
 
 const app = new Vue({
