@@ -29,6 +29,12 @@
                                     <input id="password-confirm" v-model="user.password_confirmation"  type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <label for="role" class="col-md-4 col-form-label text-md-right">Role</label>
+                                <div class="col-md-8">
+                                    <multiselect v-model="user.role" :options="roles"></multiselect>
+                                </div>
+                            </div>
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-6">
                                     <button type="submit" class="btn btn-primary">
@@ -44,21 +50,36 @@
     </div>
 </template>
 <script>
+import Multiselect from 'vue-multiselect';
 export default {
     data() {
         return {
+            roles: [],
             user: {
                 name:'',
                 email: '',
                 password: '',
-                password_confirmation: ''
+                password_confirmation: '',
+                role: '',
             }
         }
+    },
+    components: {
+        Multiselect
     },
     props: {
         getUserList: { type: Function },
     },
     methods: {
+        getRoles() {
+            axios.get('/api/roles').then((response) => {
+                let allRoles = [];
+                response.data.data.forEach(element => {
+                    allRoles.push(element.name);
+                });
+                this.roles = allRoles;
+            });
+        },
         addUser() {
             axios.post('/api/users', this.user).then((response) => {
                 this.$toasted.show(response.data.message);
@@ -68,7 +89,10 @@ export default {
                 this.$bvModal.hide('user-add');
             });
         }
+    },
+    created() {
+        this.getRoles();
     }
 }
 </script>
-
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

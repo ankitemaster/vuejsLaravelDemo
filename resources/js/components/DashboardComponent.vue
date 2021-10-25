@@ -17,33 +17,33 @@
                 </div>
                 <div class="col-lg-4 col-md-12">
                     <div class="white-box analytics-info">
-                        <h3 class="box-title">Total Page Views</h3>
+                        <h3 class="box-title">Total Project</h3>
                         <ul class="list-inline two-part d-flex align-items-center mb-0">
                             <li>
                                 <div id="sparklinedash2"><canvas width="67" height="30"
                                         style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
                                 </div>
                             </li>
-                            <li class="ms-auto"><span class="counter text-purple">869</span></li>
+                            <li class="ms-auto"><span class="counter text-purple">{{ this.projectCount }}</span></li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-12">
                     <div class="white-box analytics-info">
-                        <h3 class="box-title">Unique Visitor</h3>
+                        <h3 class="box-title">Total Sample</h3>
                         <ul class="list-inline two-part d-flex align-items-center mb-0">
                             <li>
                                 <div id="sparklinedash3"><canvas width="67" height="30"
                                         style="display: inline-block; width: 67px; height: 30px; vertical-align: top;"></canvas>
                                 </div>
                             </li>
-                            <li class="ms-auto"><span class="counter text-info">911</span>
+                            <li class="ms-auto"><span class="counter text-info">0</span>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
                     <div class="white-box">
                         <h3 class="box-title">Products Yearly Sales</h3>
@@ -64,7 +64,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- ============================================================== -->
             <!-- RECENT SALES -->
             <!-- ============================================================== -->
@@ -74,7 +74,7 @@
                         <div class="d-md-flex mb-3">
                             <h3 class="box-title mb-0">Users</h3>
                             <div class="col-md-2 col-sm-2 col-xs-2 ms-auto">
-                                <b-button v-b-modal="'user-add'">Add User</b-button>
+                                <b-button v-if="add_user" v-b-modal="'user-add'">Add User</b-button>
                             </div>
                             <div class="col-md-3 col-sm-4 col-xs-3">
                                 <input @change="getUserList()" type="text" v-model="userSearchValue" class="form-select shadow-none row border-top"/>
@@ -88,7 +88,7 @@
                             </div>
                             <div class="col-md-3 col-sm-4 col-xs-3" id="userPaginationDiv">
                                 <select @change="getUserList()" v-model="pageCount" class="form-select shadow-none row border-top">
-                                    <option value="2" selected>2</option>
+                                    <option value="2" selected>10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
                                 </select>
@@ -113,8 +113,8 @@
                                         <td class="txt-oflo">{{ user.email_verified_at == null ? 'Not Verified' : 'Verified' }}</td>
                                         <td>
                                             <button @click="getSingleUserData(user.id)" class="btn btn-primary">View</button>
-                                            <button class="btn btn-warning"><router-link :to="{ path: '/users/edit/'+ user.id }">Edit</router-link></button>
-                                            <button @click="deleteUser(user.id)" class="btn btn-danger">Delete</button>
+                                            <button :v-if="edit_user" class="btn btn-warning"><router-link :to="{ path: '/users/edit/'+ user.id }">Edit</router-link></button>
+                                            <button :v-if="delete_user" @click="deleteUser(user.id)" class="btn btn-danger">Delete</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -130,7 +130,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-md-12 col-lg-8 col-sm-12">
                     <div class="card white-box p-0">
                         <div class="card-body">
@@ -292,7 +292,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <b-modal id="user-add" title="Add User" :hide-footer="true">
@@ -304,12 +304,6 @@
             <p class="my-4">Email : {{ user.email }}</p>
             <p class="my-4">Status : {{ user.email_verified_at == null ? 'Not Verified' : 'Verified' }}</p>
         </b-modal>
-        <select  v-model="roleId">
-            <option value="">Select Role</option>
-            <option v-for="(role, index) in roleList" :key="index" :value="role.id" >
-                {{ role.name }}
-            </option>
-        </select>
     </div>
 </template>
 <script>
@@ -320,9 +314,13 @@ export default {
     },
     data() {
         return {
+            add_user: false,
+            delete_user: false,
+            edit_user: false,
             pagination: {},
             userCount: 0,
-            pageCount: 2,
+            projectCount: 0,
+            pageCount: 10,
             users: [],
             user: {
                 id: '',
@@ -376,6 +374,11 @@ export default {
             axios.get('/api/roles').then((res) => {
                 this.roleList = res.data.data
             })
+        },
+        getProjectList() {
+            axios.get('/api/projects').then((response) => {
+                this.projectCount = response.data.data.length;
+            });
         }
 
     },
@@ -383,6 +386,10 @@ export default {
         this.getDashboardCount();
         this.getUserList();
         this.getRoleList();
+        this.getProjectList();
+        this.add_user = this.can('add_user');
+        this.edit_user = this.can('edit_user');
+        this.delete_user = this.can('delete_user');
     }
 }
 </script>

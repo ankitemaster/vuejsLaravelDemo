@@ -64,6 +64,12 @@ class UserController extends Controller
             ]);
         }
         User::create($request->all());
+
+        $user = User::where('email', $request->email)->first();
+        if($request->role) {
+            $user->assignRole($request->role);
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'User Created Successfully',

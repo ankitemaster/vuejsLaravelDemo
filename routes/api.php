@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\RoleConteroller;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -19,4 +20,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::resource('roles', RoleConteroller::class);
     Route::resource('permissions', PermissionController::class);
+
+    Route::resource('projects', ProjectController::class);
 });

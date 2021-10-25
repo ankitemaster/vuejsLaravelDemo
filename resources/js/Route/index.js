@@ -18,6 +18,30 @@ const routes = [
         component: () => import('./../components/ProfileComponent')
     },
     {
+        path: '/project',
+        name: 'project',
+        meta: {
+            auth: true
+        },
+        component: () => import('./../components/ProjectComponent')
+    },
+    {
+        path: '/add-project',
+        name: 'add-project',
+        meta: {
+            auth: true
+        },
+        component: () => import('./../components/AddProjectComponent')
+    },
+    {
+        path: '/edit-project/:id',
+        name: 'edit-project',
+        meta: {
+            auth: true
+        },
+        component: () => import('./../components/AddProjectComponent')
+    },
+    {
         path: '/role-and-permission',
         name: 'role-and-permission',
         meta: {
