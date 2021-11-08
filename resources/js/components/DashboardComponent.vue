@@ -387,7 +387,8 @@ export default {
         this.getUserList();
         this.getRoleList();
         this.getProjectList();
-        this.add_user = this.can('add_user');
+        // this.add_user = this.can('add_user');
+        this.add_user = true;
         this.edit_user = this.can('edit_user');
         this.delete_user = this.can('delete_user');
     }

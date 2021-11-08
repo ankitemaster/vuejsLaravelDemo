@@ -8,6 +8,8 @@ import BootstrapVue from 'bootstrap-vue';
 import Vue from 'vue';
 import axios from 'axios';
 
+import excel from 'vue-excel-export'
+
 require('./bootstrap');
 
 window.Vue = require('vue').default;
@@ -21,6 +23,7 @@ Vue.use(VueRouter);
 Vue.use(Toasted, {
     duration: 1500
 });
+Vue.use(excel);
 
 // var mixin = Vue.mixin("can", (permissionName) => {
 //     axios.get('/api/users/permission/'+permissionName).then((response) => {

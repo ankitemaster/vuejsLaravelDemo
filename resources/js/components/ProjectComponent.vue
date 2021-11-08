@@ -8,6 +8,18 @@
                             <h1>
                                 <span class="fl">Project List</span>
                                 <span class="fr">
+
+                                    <button class="btn btn-primary">
+                                        <export-excel
+                                        :data="json_data"
+                                        :fields="json_fields"
+                                        name="projects.xls"
+                                        >
+                                        Export
+                                        </export-excel>
+                                    </button>
+
+
                                     <router-link :to="{ path: '/add-project' }">
                                         <button :v-if="add_project" class="btn btn-primary">Add</button>
                                     </router-link>
@@ -63,12 +75,41 @@ export default {
             delete_project: false,
             add_user_to_project: false,
             delete_user_to_project: false,
+            json_fields: {
+                'Title': 'title',
+                'Description': 'description',
+                'Active': 'is_active',
+                'Complete': 'is_complete',
+            },
+            json_data: [
+
+            ],
         }
     },
     methods: {
         getProjectList() {
             axios.get('/api/projects').then((res) => {
                 this.projectList = res.data.data;
+                let jsonData = res.data.data;
+                jsonData.map((item) => {
+                    delete item.updated_at;
+                    delete item.start_date;
+                    delete item.end_date;
+                    delete item.id;
+                    delete item.created_at;
+                    if(item.is_active == 1) {
+                        item.is_active = true
+                    } else {
+                        item.is_active = false;
+                    }
+                    if(item.is_complete == 1) {
+                        item.is_complete = true
+                    } else {
+                        item.is_complete = false;
+                    }
+                    return item;
+                });
+                this.json_data = jsonData;
             });
         },
         deleteProject(projectId) {

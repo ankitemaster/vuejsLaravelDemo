@@ -45,4 +45,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        static::created(function(User $user)
+        {
+            UserRelationship::create([
+                'user_id' => auth()->user()->id,
+                'member_id' => $user->id
+            ]);
+        });
+    }
+
 }

@@ -22,4 +22,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('permissions', PermissionController::class);
 
     Route::resource('projects', ProjectController::class);
+    Route::get('projectExport', [App\Http\Controllers\Api\ProjectController::class, 'export']);
+
+
 });
