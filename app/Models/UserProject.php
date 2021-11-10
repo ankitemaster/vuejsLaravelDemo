@@ -10,4 +10,9 @@ class UserProject extends Model
     use HasFactory;
     protected $table = 'user_projects';
     protected $guarded = [];
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
 }

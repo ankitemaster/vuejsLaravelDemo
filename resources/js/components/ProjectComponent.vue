@@ -9,7 +9,7 @@
                                 <span class="fl">Project List</span>
                                 <span class="fr">
 
-                                    <button class="btn btn-primary">
+                                    <!-- <button class="btn btn-primary">
                                         <export-excel
                                         :data="json_data"
                                         :fields="json_fields"
@@ -17,7 +17,7 @@
                                         >
                                         Export
                                         </export-excel>
-                                    </button>
+                                    </button> -->
 
 
                                     <router-link :to="{ path: '/add-project' }">
@@ -44,6 +44,9 @@
                                         <td>{{ project.is_active ? true : false }}</td>
                                         <td>{{ project.description ? true : false }}</td>
                                         <td>
+                                            <router-link :v-if="view_project" :to="{ path: '/view-project/'+project.id }">
+                                                <button class="btn btn-primary" >View</button>
+                                            </router-link>
                                             <router-link :v-if="edit_project" :to="{ path: '/edit-project/'+project.id }">
                                                 <button class="btn btn-warning" >Edit</button>
                                             </router-link>
@@ -70,46 +73,47 @@ export default {
     data() {
         return {
             projectList: [],
+            view_project: false,
             add_project: false,
             edit_project: false,
             delete_project: false,
             add_user_to_project: false,
             delete_user_to_project: false,
-            json_fields: {
-                'Title': 'title',
-                'Description': 'description',
-                'Active': 'is_active',
-                'Complete': 'is_complete',
-            },
-            json_data: [
+            // json_fields: {
+            //     'Title': 'title',
+            //     'Description': 'description',
+            //     'Active': 'is_active',
+            //     'Complete': 'is_complete',
+            // },
+            // json_data: [
 
-            ],
+            // ],
         }
     },
     methods: {
         getProjectList() {
             axios.get('/api/projects').then((res) => {
                 this.projectList = res.data.data;
-                let jsonData = res.data.data;
-                jsonData.map((item) => {
-                    delete item.updated_at;
-                    delete item.start_date;
-                    delete item.end_date;
-                    delete item.id;
-                    delete item.created_at;
-                    if(item.is_active == 1) {
-                        item.is_active = true
-                    } else {
-                        item.is_active = false;
-                    }
-                    if(item.is_complete == 1) {
-                        item.is_complete = true
-                    } else {
-                        item.is_complete = false;
-                    }
-                    return item;
-                });
-                this.json_data = jsonData;
+                // let jsonData = res.data.data;
+                // jsonData.map((item) => {
+                //     delete item.updated_at;
+                //     delete item.start_date;
+                //     delete item.end_date;
+                //     delete item.id;
+                //     delete item.created_at;
+                //     if(item.is_active == 1) {
+                //         item.is_active = true
+                //     } else {
+                //         item.is_active = false;
+                //     }
+                //     if(item.is_complete == 1) {
+                //         item.is_complete = true
+                //     } else {
+                //         item.is_complete = false;
+                //     }
+                //     return item;
+                // });
+                // this.json_data = jsonData;
             });
         },
         deleteProject(projectId) {
@@ -120,11 +124,22 @@ export default {
     },
     created() {
         this.getProjectList();
-        this.add_project = this.can('add_project');
-        this.edit_project = this.can('edit_project');
-        this.delete_project = this.can('delete_project');
-        this.add_user_to_project = this.can('add_user_to_project');
-        this.delete_user_to_project = this.can('delete_user_to_project');
+        axios.get('/api/users/permission/add_project').then((response) => {
+            this.add_project = response.data;
+        });
+        axios.get('/api/users/permission/edit_project').then((response) => {
+            this.edit_project = response.data;
+        });
+        axios.get('/api/users/permission/delete_project').then((response) => {
+            this.delete_project = response.data;
+        });
+        axios.get('/api/users/permission/add_user_to_project').then((response) => {
+            this.add_user_to_project = response.data;
+        });
+        axios.get('/api/users/permission/delete_user_to_project').then((response) => {
+            this.delete_user_to_project = response.data;
+        });
+
     }
 }
 </script>

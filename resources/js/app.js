@@ -36,7 +36,6 @@ Vue.mixin({
     methods: {
         can(permissionName) {
             axios.get('/api/users/permission/'+permissionName).then((response) => {
-                console.log(response.data);
                 return response.data;
             });
         }

@@ -50,7 +50,12 @@ class ProjectController extends Controller
 
     public function show($id) {
         $project = Project::find($id);
-        $project->project_users = UserProject::where('project_id', $id)->get();
+        $project_users = UserProject::with('user')->where('project_id', $id)->get();
+        $project_users_array = array();
+        foreach($project_users as $project_user) {
+            array_push($project_users_array, $project_user->user);
+        }
+        $project->project_users = $project_users_array;
         return response()->json([
             'status' => true,
             'message' => 'Project Get Successfully',

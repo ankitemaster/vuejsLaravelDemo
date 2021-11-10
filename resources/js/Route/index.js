@@ -34,12 +34,28 @@ const routes = [
         component: () => import('./../components/AddProjectComponent')
     },
     {
+        path: '/view-project/:id',
+        name: 'view-project',
+        meta: {
+            auth: true
+        },
+        component: () => import('./../components/ProjectViewComponent')
+    },
+    {
         path: '/edit-project/:id',
         name: 'edit-project',
         meta: {
             auth: true
         },
         component: () => import('./../components/AddProjectComponent')
+    },
+    {
+        path: '/view-sample/:id',
+        name: 'view-sample',
+        meta: {
+            auth: true
+        },
+        component: () => import('./../components/SampleViewComponent')
     },
     {
         path: '/role-and-permission',

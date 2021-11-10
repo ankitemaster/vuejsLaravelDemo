@@ -43,6 +43,9 @@ class RoleAndPermissionSeeder extends Seeder
 
         $role = Role::where('name', 'Admin')->where('guard_name', 'api')->first();
         $role->syncPermissions([
+            "add_user",
+            "edit_user",
+            "delete_user",
             "add_user_to_project",
             "delete_user_to_project",
             "hide_sample_from_project",

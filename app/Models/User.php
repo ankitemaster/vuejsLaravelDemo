@@ -51,10 +51,12 @@ class User extends Authenticatable
         parent::boot();
         static::created(function(User $user)
         {
-            UserRelationship::create([
-                'user_id' => auth()->user()->id,
-                'member_id' => $user->id
-            ]);
+            if($user->id != 1) {
+                UserRelationship::create([
+                    'user_id' => auth()->user()->id,
+                    'member_id' => $user->id
+                ]);
+            }
         });
     }
 

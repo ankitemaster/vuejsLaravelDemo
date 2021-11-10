@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\RoleConteroller;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\SampleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,5 +25,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('projects', ProjectController::class);
     Route::get('projectExport', [App\Http\Controllers\Api\ProjectController::class, 'export']);
 
+    Route::resource('samples', SampleController::class);
+
+    Route::post('samples/signatureUpload/{id}', [App\Http\Controllers\SampleController::class, 'signatureUpload']);
 
 });

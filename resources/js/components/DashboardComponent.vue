@@ -111,7 +111,7 @@
                                         <td class="txt-oflo">{{ user.name }}</td>
                                         <td>{{ user.email }}</td>
                                         <td class="txt-oflo">{{ user.email_verified_at == null ? 'Not Verified' : 'Verified' }}</td>
-                                        <td>
+                                        <td v-if="user.id != 1">
                                             <button @click="getSingleUserData(user.id)" class="btn btn-primary">View</button>
                                             <button :v-if="edit_user" class="btn btn-warning"><router-link :to="{ path: '/users/edit/'+ user.id }">Edit</router-link></button>
                                             <button :v-if="delete_user" @click="deleteUser(user.id)" class="btn btn-danger">Delete</button>
@@ -379,7 +379,18 @@ export default {
             axios.get('/api/projects').then((response) => {
                 this.projectCount = response.data.data.length;
             });
-        }
+        },
+        getPermision() {
+            axios.get('/api/users/permission/add_user').then((response) => {
+                this.add_user = response.data;
+            });
+            axios.get('/api/users/permission/edit_user').then((response) => {
+                this.edit_user = response.data;
+            });
+            axios.get('/api/users/permission/delete_user').then((response) => {
+                this.delete_user = response.data;
+            });
+        },
 
     },
     created() {
@@ -387,10 +398,7 @@ export default {
         this.getUserList();
         this.getRoleList();
         this.getProjectList();
-        // this.add_user = this.can('add_user');
-        this.add_user = true;
-        this.edit_user = this.can('edit_user');
-        this.delete_user = this.can('delete_user');
+        this.getPermision();
     }
 }
 </script>
