@@ -19,12 +19,12 @@
                 <span class="text-white ms-auto">{{  }}</span>
                 <ul class="navbar-nav ms-auto d-flex align-items-center">
                     <li class=" in">
-                        <form role="search" class="app-search d-none d-md-block me-3">
+                        <!-- <form role="search" class="app-search d-none d-md-block me-3">
                             <input type="text" placeholder="Search..." class="form-control mt-0">
                             <a href="" class="active">
                                 <i class="fa fa-search"></i>
                             </a>
-                        </form>
+                        </form> -->
                     </li>
                     <li class="dropdown">
                         <a class="dropdown-toggle profile-pic" data-toggle="dropdown" role="button" aria-expanded="false" href="#">
