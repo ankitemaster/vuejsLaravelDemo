@@ -10,10 +10,19 @@ use Illuminate\Http\Request;
 class ProjectController extends Controller
 {
     public function index() {
+
+        if(auth()->user()->hasRole('Super Admin')) {
+            $projects = Project::orderBy('id', 'desc')->get();
+        } else if(auth()->user()->hasRole('Admin')) {
+            $projects = Project::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
+        } else {
+            $projectIds = UserProject::where('user_id', auth()->user()->id)->pluck('project_id');
+            $projects = Project::whereIn('id', $projectIds)->orderBy('id', 'desc')->get();
+        }
         return response()->json([
             'status' => true,
             'message' => 'Project List Get Successfully',
-            'data' => Project::orderBy('id', 'desc')->get()
+            'data' => $projects
         ]);
     }
 

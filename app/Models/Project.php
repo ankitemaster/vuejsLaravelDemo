@@ -14,4 +14,13 @@ class Project extends Model
     public function users() {
         return $this->hasMany(UserProject::class, 'project_id', 'id');
     }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function(Project $project)
+        {
+            $project->user_id =  auth()->user()->id;
+        });
+    }
 }

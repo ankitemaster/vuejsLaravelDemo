@@ -33,7 +33,7 @@ class UserController extends Controller
                 }
             })->orderBy('id', 'desc')->paginate($pageCount);
         } else {
-            $userRelationship = UserRelationship::where('user_id', auth()->user()->id)->pluck('id');
+            $userRelationship = UserRelationship::where('user_id', auth()->user()->id)->pluck('member_id');
             $users = User::whereIn('id', $userRelationship)->when($search, function($query) use($search) {
                 $query->where('name', 'like', '%'.$search.'%');
             })->when($filter, function($query1) use ($filter) {

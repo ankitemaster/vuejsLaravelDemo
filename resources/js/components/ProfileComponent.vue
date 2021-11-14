@@ -6,14 +6,14 @@
                     <h4 class="page-title">Profile page</h4>
                 </div>
                 <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
-                    <div class="d-md-flex">
+                    <!-- <div class="d-md-flex">
                         <ol class="breadcrumb ms-auto">
                             <li><a href="#" @click="redirectToDashboard" class="fw-normal">Dashboard</a></li>
                         </ol>
                         <a href="https://www.wrappixel.com/templates/ampleadmin/" target="_blank"
                             class="btn btn-danger  d-none d-md-block pull-right ms-3 hidden-xs hidden-sm waves-effect waves-light text-white">Upgrade
                             to Pro</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="user-btm-box mt-5 d-md-flex">
+                        <!-- <div class="user-btm-box mt-5 d-md-flex">
                             <div class="col-md-4 col-sm-4 text-center">
                                 <h1>258</h1>
                             </div>
@@ -41,7 +41,7 @@
                             <div class="col-md-4 col-sm-4 text-center">
                                 <h1>556</h1>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="col-lg-8 col-xlg-9 col-md-12">
@@ -144,10 +144,10 @@ export default {
             formData.append("mobile", this.user.mobile);
             formData.append("profile", this.user.profile);
             formData.append("_method", "put");
-
             axios.post('/api/users/'+this.user.id,formData).then((res)=>{
                 localStorage.setItem('user', JSON.stringify(res.data.data[0]));
                 this.getProfile();
+                window.location.reload();
             });
         },
         getProfile() {

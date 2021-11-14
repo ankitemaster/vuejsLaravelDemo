@@ -35,7 +35,8 @@ class RoleAndPermissionSeeder extends Seeder
             "approve_project",
             "add_sample",
             "upload_photo_to_sample",
-            "sign_sample"
+            "sign_sample",
+            "delete_sign"
         ];
         foreach($permissions as $permission) {
             Permission::create(['guard_name' => 'api', 'name' => $permission]);

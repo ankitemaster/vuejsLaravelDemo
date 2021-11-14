@@ -21,6 +21,7 @@ class CreateProjectTable extends Migration
             $table->date('end_date')->nullable();
             $table->tinyInteger('is_active')->default(1);
             $table->tinyInteger('is_complete')->default(1);
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

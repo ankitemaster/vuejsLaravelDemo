@@ -2,19 +2,21 @@
     <header class="topbar" data-navbarbg="skin5">
         <nav class="navbar top-navbar navbar-expand-md navbar-dark">
             <div class="navbar-header" data-logobg="skin6">
-                <a class="navbar-brand" href="dashboard.html">
-                    <b class="logo-icon">
+                <a class="navbar-brand text-center text-dark" href="#" @click="redirectToDashboard">
+                    <!-- <b class="logo-icon">
                         <img src="/plugins/images/logo-icon.png" alt="homepage" />
                     </b>
                     <span class="logo-text">
                         <img src="/plugins/images/logo-text.png" alt="homepage" />
-                    </span>
+                    </span> -->
+                    {{ this.username }}
                 </a>
                 <a class="nav-toggler waves-effect waves-light text-dark d-block d-md-none"
                     href="javascript:void(0)"><i class="ti-menu ti-close"></i>
                 </a>
             </div>
             <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
+                <span class="text-white ms-auto">{{  }}</span>
                 <ul class="navbar-nav ms-auto d-flex align-items-center">
                     <li class=" in">
                         <form role="search" class="app-search d-none d-md-block me-3">
@@ -52,16 +54,19 @@
 export default {
     data() {
         return {
+            username : JSON.parse(localStorage.getItem('user')).name,
             csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             user: JSON.parse(localStorage.getItem('user'))
         }
     },
     created() {
-        console.log(this.user);
+
     },
     methods: {
+        redirectToDashboard() {
+            this.$router.push({name:'dashboard'});
+        },
         logout() {
-            // this.$store.dispatch('logout');
             this.$refs.logoutform.submit()
         }
     }

@@ -3,6 +3,8 @@ import App from './App.vue';
 import router from './Route/index';
 import store from './Store/index';
 import Toasted from 'vue-toasted';
+import VueFileAgent from 'vue-file-agent';
+import VueFileAgentStyles from 'vue-file-agent/dist/vue-file-agent.css';
 
 import BootstrapVue from 'bootstrap-vue';
 import Vue from 'vue';
@@ -24,6 +26,7 @@ Vue.use(Toasted, {
     duration: 1500
 });
 Vue.use(excel);
+Vue.use(VueFileAgent);
 
 // var mixin = Vue.mixin("can", (permissionName) => {
 //     axios.get('/api/users/permission/'+permissionName).then((response) => {

@@ -65,6 +65,7 @@
 </template>
 <script>
 import { Multiselect } from 'vue-multiselect';
+import swal from 'sweetalert2';
 export default {
     name: 'project',
     components: {
@@ -117,8 +118,17 @@ export default {
             });
         },
         deleteProject(projectId) {
-            axios.delete('/api/projects/'+projectId).then((res) => {
-                this.getProjectList();
+            new swal({
+                title: 'Are you Sure ? You want to delete !',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Cancel'
+            }).then((res) => {
+                if(res.value){
+                    axios.delete('/api/projects/'+projectId).then((res) => {
+                        this.getProjectList();
+                    });
+                }
             });
         }
     },
@@ -139,7 +149,6 @@ export default {
         axios.get('/api/users/permission/delete_user_to_project').then((response) => {
             this.delete_user_to_project = response.data;
         });
-
     }
 }
 </script>

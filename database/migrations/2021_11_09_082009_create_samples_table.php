@@ -49,6 +49,14 @@ class CreateSamplesTable extends Migration
             $table->string('esd_sign', 200)->nullable();
             $table->string('bca_sign', 200)->nullable();
 
+            $table->longText('clientSignatureComment')->nullable();
+            $table->longText('clientRepSignatureComment')->nullable();
+            $table->longText('architectSignatureComment')->nullable();
+            $table->longText('serviceRepoSignatureComment')->nullable();
+            $table->longText('structuralRepoSignatureComment')->nullable();
+            $table->longText('esdRepoSignatureComment')->nullable();
+            $table->longText('bcaRepoSignatureComment')->nullable();
+
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             $table->timestamps();
         });

@@ -31,7 +31,7 @@
                                                 <input id="is_active" v-model="project.is_active" type="checkbox" name="is_active" required autocomplete="is_active" autofocus>
                                             </div>
                                         </div>
-                                        <div class="form-group row">
+                                        <div class="form-group row" v-if="false">
                                             <label for="complete" class="col-md-4 col-form-label text-md-right">Complete</label>
                                             <div class="col-md-8">
                                                 <input id="is_complete" v-model="project.is_complete" type="checkbox" name="is_complete" required autocomplete="is_complete" autofocus>

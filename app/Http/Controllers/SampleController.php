@@ -61,13 +61,33 @@ class SampleController extends Controller
      */
     public function show($id)
     {
-        $sample = Sample::find($id);
+        $sample = Sample::with('project')->where('id', $id)->first();
         $baseUrl = url('images').'/';
         if($sample->sample_type_photo) {
-            $sample->sample_type_photo = $baseUrl.$sample->sample_type_photo;
+            if(count(json_decode($sample->sample_type_photo)) > 0) {
+                $sampleTypePhoto = json_decode($sample->sample_type_photo);
+                foreach($sampleTypePhoto as $key=>$value) {
+                    $sampleTypePhoto[$key] = $baseUrl.$value;
+                }
+                $sample->sample_type_photo = $sampleTypePhoto;
+            } else {
+                $sample->sample_type_photo = [];
+            }
+        } else {
+            $sample->sample_type_photo = [];
         }
         if($sample->tech_data_photo) {
-            $sample->tech_data_photo = $baseUrl.$sample->tech_data_photo;
+            if(count(json_decode($sample->tech_data_photo)) > 0) {
+                $techDataPhoto = json_decode($sample->tech_data_photo);
+                foreach($techDataPhoto as $key=>$value) {
+                    $techDataPhoto[$key] = $baseUrl.$value;
+                }
+                $sample->tech_data_photo = $techDataPhoto;
+            } else {
+                $sample->tech_data_photo = [];
+            }
+        } else {
+            $sample->tech_data_photo = [];
         }
         if($sample->client_sign) {
             $sample->client_sign = $baseUrl.$sample->client_sign;
@@ -117,28 +137,125 @@ class SampleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if($request->hasFile('sample_type_photo1')) {
-            $image = $request->file('sample_type_photo1');
-            $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/images');
-            $image->move($destinationPath, $name);
-            $request->merge(['sample_type_photo'=>$name]);
-        }
-        if($request->hasFile('tech_data_photo1')) {
-            $image = $request->file('tech_data_photo1');
-            $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/images');
-            $image->move($destinationPath, $name);
-            $request->merge(['tech_data_photo'=>$name]);
-        }
-        $request->merge(['created_at'=>date('Y-m-d H:i:s', strtotime($request->created_at))]);
-        Sample::where('id', $id)->update(
-            $request->except(['id','_method', 'updated_at', 'sample_type_photo1', 'tech_data_photo1'])
-        );
+        $allRequest = $request->except(['sample_type_photo','tech_data_photo','id','_method', 'updated_at', 'client_sign', 'client_rep_sign', 'architect_sign', 'service_consult_sign', 'structural_consult_sign', 'esd_sign', 'bca_sign', 'project', 'clientSignatureComment', 'clientRepSignatureComment', 'architectSignatureComment', 'serviceRepoSignatureComment', 'structuralRepoSignatureComment', 'esdRepoSignatureComment', 'bcaRepoSignatureComment']);
+        $allRequest['created_at'] = date('Y-m-d H:i:s', strtotime($request->created_at));
+        Sample::where('id', $id)->update($allRequest);
         return response()->json([
             'status' => true,
             'message' => 'Sample Updated Successfully',
             'data' => $request->all()
+        ]);
+    }
+
+    /**
+     * deleteSampleTypePhotoUpload
+     */
+    public function deleteSampleTypePhotoUpload(Request $request, $id)
+    {
+        $name = $request->name;
+        $sample = Sample::where('id', $id)->first();
+        if($sample->sample_type_photo) {
+            $sampleTypePhoto =  json_decode($sample->sample_type_photo);
+            foreach($sampleTypePhoto as $key=>$value) {
+                if($value == $name) {
+                    unset($sampleTypePhoto[$key]);
+                }
+            }
+            $sampleTypePhoto = array_values($sampleTypePhoto);
+        } else {
+            $sampleTypePhoto = [];
+        }
+        $allRequest['sample_type_photo'] = $sampleTypePhoto;
+        Sample::where('id', $id)->update($allRequest);
+        return response()->json([
+            'status' => true,
+            'message' => 'Files Deleted Successfully',
+            'date' => []
+        ]);
+    }
+
+    /**
+     * sampleTypePhoto Upload
+     */
+    public function sampleTypePhotoUpload(Request $request, $id)
+    {
+        $sample = Sample::where('id', $id)->first();
+        if($sample->sample_type_photo) {
+            $sampleTypePhoto =  json_decode($sample->sample_type_photo);
+        } else {
+            $sampleTypePhoto = [];
+        }
+        $allRequest = [];
+        if($request->hasFile('file')) {
+            $image = $request->file('file');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            array_push($sampleTypePhoto, $name);
+            $allRequest['sample_type_photo'] = json_encode($sampleTypePhoto);
+        }
+        $allRequest['sample_type'] = 1;
+        Sample::where('id', $id)->update($allRequest);
+        return response()->json([
+            'status' => true,
+            'message' => 'Files Upload Successfully',
+            'date' => []
+        ]);
+    }
+
+    /**
+     * deleteSampleTypePhotoUpload
+     */
+    public function deleteTechDataPhotoUpload(Request $request, $id)
+    {
+        $name = $request->name;
+        $sample = Sample::where('id', $id)->first();
+        if($sample->tech_data_photo) {
+            $techDataPhoto =  json_decode($sample->tech_data_photo);
+            foreach($techDataPhoto as $key=>$value) {
+                if($value == $name) {
+                    unset($techDataPhoto[$key]);
+                }
+            }
+            $techDataPhoto = array_values($techDataPhoto);
+        } else {
+            $techDataPhoto = [];
+        }
+        $allRequest['tech_data_photo'] = $techDataPhoto;
+        Sample::where('id', $id)->update($allRequest);
+        return response()->json([
+            'status' => true,
+            'message' => 'Files Deleted Successfully',
+            'date' => []
+        ]);
+    }
+
+    /**
+     * sampleTypePhoto Upload
+     */
+    public function techDataPhotoUpload(Request $request, $id)
+    {
+        $sample = Sample::where('id', $id)->first();
+        if($sample->tech_data_photo) {
+            $techDataPhoto =  json_decode($sample->tech_data_photo);
+        } else {
+            $techDataPhoto = [];
+        }
+        $allRequest = [];
+        if($request->hasFile('file')) {
+            $image = $request->file('file');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            array_push($techDataPhoto, $name);
+            $allRequest['tech_data_photo'] = json_encode($techDataPhoto);
+        }
+        $allRequest['data_period'] = 1;
+        Sample::where('id', $id)->update($allRequest);
+        return response()->json([
+            'status' => true,
+            'message' => 'Files Upload Successfully',
+            'date' => []
         ]);
     }
 
@@ -166,12 +283,30 @@ class SampleController extends Controller
             $image->move($destinationPath, $name);
         }
         $key = $request->key;
+        $commentKey = $request->commentKey;
         $sample = Sample::where('id', $id)->first();
         $sample->$key = $name;
+        $sample->$commentKey = $request->commentValue;
         $sample->save();
         return response()->json([
             'status' => true,
             'message' => 'Signature Uploaded Successfully'
+        ]);
+    }
+
+    /**
+     * deleteSignature
+     */
+    public function deleteSignature(Request $request, $id) {
+        $key = $request->key;
+        $commentKey = $request->commentKey;
+        $sample = Sample::where('id', $id)->first();
+        $sample->$key = NULL;
+        $sample->$commentKey = NULL;
+        $sample->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Deleted Signature Successfully'
         ]);
     }
 }
