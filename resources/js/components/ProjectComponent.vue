@@ -3,26 +3,26 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12 col-xlg-12 col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h1>
-                                <span class="fl">Project List</span>
-                                <span class="fr">
+                    <h1>
+                        <span class="fl">Project List</span>
+                        <span class="fr">
 
-                                    <!-- <button class="btn btn-primary">
-                                        <export-excel
-                                        :data="json_data"
-                                        :fields="json_fields"
-                                        name="projects.xls"
-                                        >
-                                        Export
-                                        </export-excel>
-                                    </button> -->
-                                    <router-link :to="{ path: '/add-project' }">
-                                        <button :v-if="add_project" class="btn btn-primary">Add</button>
-                                    </router-link>
-                                </span>
-                            </h1>
+                            <!-- <button class="btn btn-primary">
+                                <export-excel
+                                :data="json_data"
+                                :fields="json_fields"
+                                name="projects.xls"
+                                >
+                                Export
+                                </export-excel>
+                            </button> -->
+                            <router-link :to="{ path: '/add-project' }">
+                                <button :v-if="add_project" class="btn btn-primary">Add</button>
+                            </router-link>
+                        </span>
+                    </h1>
+                    <div class="card" style="width:100%">
+                        <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
