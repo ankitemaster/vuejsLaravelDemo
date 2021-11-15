@@ -1,7 +1,7 @@
 <template>
     <div class="page-wrapper">
         <div class="container-fluid">
-            <h3 class="text-center text-dark projectName">{{ projectName }}</h3>
+            <h3 class="text-center text-dark projectName">Project Name: {{ projectName }}</h3>
             <form method="POST" @submit.prevent="updateSample" action="#" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-lg-6 col-xlg-6 col-md-12">

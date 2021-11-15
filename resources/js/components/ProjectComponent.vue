@@ -18,43 +18,43 @@
                                         Export
                                         </export-excel>
                                     </button> -->
-
-
                                     <router-link :to="{ path: '/add-project' }">
                                         <button :v-if="add_project" class="btn btn-primary">Add</button>
                                     </router-link>
                                 </span>
                             </h1>
-                            <table class="table text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th class="border-top-0">#</th>
-                                        <th class="border-top-0">Title</th>
-                                        <th class="border-top-0">Description</th>
-                                        <th class="border-top-0">Active</th>
-                                        <th class="border-top-0">Complete</th>
-                                        <th class="border-top-0">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(project, index) in projectList" :key="index">
-                                        <td>{{ (index+1) }}</td>
-                                        <td>{{ project.title }}</td>
-                                        <td>{{ project.description }}</td>
-                                        <td>{{ project.is_active ? true : false }}</td>
-                                        <td>{{ project.description ? true : false }}</td>
-                                        <td>
-                                            <router-link :v-if="view_project" :to="{ path: '/view-project/'+project.id }">
-                                                <button class="btn btn-primary" >View</button>
-                                            </router-link>
-                                            <router-link :v-if="edit_project" :to="{ path: '/edit-project/'+project.id }">
-                                                <button class="btn btn-warning" >Edit</button>
-                                            </router-link>
-                                            <button :v-if="delete_project" class="btn btn-danger" @click="deleteProject(project.id)">Delete</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">#</th>
+                                            <th class="border-top-0">Title</th>
+                                            <th class="border-top-0">Description</th>
+                                            <th class="border-top-0">Active</th>
+                                            <th class="border-top-0">Complete</th>
+                                            <th class="border-top-0">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(project, index) in projectList" :key="index">
+                                            <td>{{ (index+1) }}</td>
+                                            <td>{{ project.title }}</td>
+                                            <td>{{ project.description }}</td>
+                                            <td>{{ project.is_active ? true : false }}</td>
+                                            <td>{{ project.description ? true : false }}</td>
+                                            <td>
+                                                <router-link :v-if="view_project" :to="{ path: '/view-project/'+project.id }">
+                                                    <button class="btn btn-primary" >View</button>
+                                                </router-link>
+                                                <router-link :v-if="edit_project" :to="{ path: '/edit-project/'+project.id }">
+                                                    <button class="btn btn-warning" >Edit</button>
+                                                </router-link>
+                                                <button :v-if="delete_project" class="btn btn-danger" @click="deleteProject(project.id)">Delete</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
