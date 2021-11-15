@@ -386,7 +386,7 @@ export default {
             this.$refs.vueFileAgent.upload(this.uploadUrl, this.uploadHeaders, this.fileRecordsForUpload);
             this.fileRecordsForUpload = [];
             this.fileRecords = [];
-            this.getSampleDetail();
+            setTimeout(() => this.getSampleDetail(), 1000);
         },
         deleteUploadedFile: function (fileRecord) {
             this.$refs.vueFileAgent.deleteUpload(this.uploadUrl, this.uploadHeaders, fileRecord);
