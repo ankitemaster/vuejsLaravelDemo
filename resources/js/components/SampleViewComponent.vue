@@ -338,7 +338,7 @@ export default {
         return {
             projectName: '',
             fileRecords: [],
-            uploadUrl: 'http://18.223.248.192/api/samples/sampleTypePhotoUpload/'+this.$route.params.id,
+            uploadUrl: 'http://localhost:8000/api/samples/sampleTypePhotoUpload/'+this.$route.params.id,
             uploadHeaders: { 'X-Test-Header': 'vue-file-agent', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
             fileRecordsForUpload: [], // maintain an upload queue
             sampleData: {},
@@ -595,9 +595,9 @@ export default {
         },
         changeUploadUrl(type) {
             if(type == 'sample_type') {
-                this.uploadUrl = 'http://18.223.248.192/api/samples/sampleTypePhotoUpload/'+this.$route.params.id;
+                this.uploadUrl = 'http://localhost:8000/api/samples/sampleTypePhotoUpload/'+this.$route.params.id;
             } else {
-                this.uploadUrl ='http://18.223.248.192/api/samples/techDataPhotoUpload/'+this.$route.params.id;
+                this.uploadUrl ='http://localhost:8000/api/samples/techDataPhotoUpload/'+this.$route.params.id;
             }
         }
     },

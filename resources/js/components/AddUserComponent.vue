@@ -30,6 +30,12 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <label for="company_name" class="col-md-4 col-form-label text-md-right">Company Name</label>
+                                <div class="col-md-8">
+                                    <input id="company_name" v-model="user.company_name"  type="text" class="form-control" name="company_name" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label for="role" class="col-md-4 col-form-label text-md-right">Role</label>
                                 <div class="col-md-8">
                                     <multiselect v-model="user.role" :options="roles"></multiselect>

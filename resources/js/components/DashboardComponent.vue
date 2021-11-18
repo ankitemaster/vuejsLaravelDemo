@@ -101,6 +101,7 @@
                                         <th class="border-top-0">#</th>
                                         <th class="border-top-0">Name</th>
                                         <th class="border-top-0">Email</th>
+                                        <th class="border-top-0">Company Name</th>
                                         <th class="border-top-0">Status</th>
                                         <th class="border-top-0">Action</th>
                                     </tr>
@@ -110,6 +111,7 @@
                                         <td>{{ (index+1) }}</td>
                                         <td class="txt-oflo">{{ user.name }}</td>
                                         <td>{{ user.email }}</td>
+                                        <td>{{ user.company_name }}</td>
                                         <td class="txt-oflo">{{ user.email_verified_at == null ? 'Not Verified' : 'Verified' }}</td>
                                         <td v-if="user.id != 1">
                                             <button @click="getSingleUserData(user.id)" class="btn btn-primary">View</button>
@@ -391,7 +393,6 @@ export default {
                 this.delete_user = response.data;
             });
         },
-
     },
     created() {
         this.getDashboardCount();

@@ -144,7 +144,8 @@ class UserController extends Controller
             [
                 'name' => $request->name,
                 'mobile' => $request->mobile,
-                'profile' => $name
+                'profile' => $name,
+                'company_name' => $request->company_name
             ]
         );
         $user = User::find($id);

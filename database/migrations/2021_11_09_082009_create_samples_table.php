@@ -57,7 +57,57 @@ class CreateSamplesTable extends Migration
             $table->longText('esdRepoSignatureComment')->nullable();
             $table->longText('bcaRepoSignatureComment')->nullable();
 
+            // $table->longText('signatureValues')->default(
+            //     json_encode(
+            //         [
+            //             [
+            //                 "role_name" => "client_sign",
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id' => null
+            //             ],
+            //             [
+            //                 'role_name' => 'client_rep_sign',
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id'=> null
+            //             ],
+            //             [
+            //                 "role_name" => "architect_sign",
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id' => null
+            //             ],
+            //             [
+            //                 'role_name' => 'service_consult_sign',
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id'=> null
+            //             ],
+            //             [
+            //                 "role_name" => "structural_consult_sign",
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id' => null
+            //             ],
+            //             [
+            //                 'role_name' => 'esd_sign',
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id'=> null
+            //             ],
+            //             [
+            //                 'role_name' => 'bca_sign',
+            //                 'comment' => '',
+            //                 'status' => '0',
+            //                 'user_id'=> null
+            //             ],
+            //         ]
+            //     )
+            // );
+
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

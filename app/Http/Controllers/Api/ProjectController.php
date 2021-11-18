@@ -27,12 +27,15 @@ class ProjectController extends Controller
     }
 
     public function store(Request $request) {
-        $project = Project::create($request->except('add_user_to_project', 'delete_user_to_project', 'project_users'));
+        $project = Project::create($request->except('add_user_to_project', 'delete_user_to_project', 'project_users', 'inputs'));
         foreach($request->project_users as $project_user) {
-            UserProject::create([
-                'user_id' => $project_user['id'],
-                'project_id' => $project->id
-            ]);
+            $userProject = UserProject::where('user_id' , $project_user['id'])->where('project_id' , $project->id)->first();
+            if(!isset($userProject->id)) {
+                UserProject::create([
+                    'user_id' => $project_user['id'],
+                    'project_id' => $project->id
+                ]);
+            }
         }
         return response()->json([
             'status' => true,
@@ -42,13 +45,16 @@ class ProjectController extends Controller
     }
 
     public function update(Request $request, $id) {
-        $project = Project::where('id', $id)->update($request->except('add_user_to_project', 'delete_user_to_project', 'project_users'));
+        $project = Project::where('id', $id)->update($request->except('add_user_to_project', 'delete_user_to_project', 'project_users', 'inputs'));
         UserProject::where('project_id', $id)->delete();
         foreach($request->project_users as $project_user) {
-            UserProject::create([
-                'user_id' => $project_user['id'],
-                'project_id' => $project->id
-            ]);
+            $userProject = UserProject::where('user_id' , $project_user['id'])->where('project_id' , $project->id)->first();
+            if(!isset($userProject->id)) {
+                UserProject::create([
+                    'user_id' => $project_user['id'],
+                    'project_id' => $project->id
+                ]);
+            }
         }
         return response()->json([
             'status' => true,

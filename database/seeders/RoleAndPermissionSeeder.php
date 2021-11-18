@@ -41,7 +41,6 @@ class RoleAndPermissionSeeder extends Seeder
         foreach($permissions as $permission) {
             Permission::create(['guard_name' => 'api', 'name' => $permission]);
         }
-
         $role = Role::where('name', 'Admin')->where('guard_name', 'api')->first();
         $role->syncPermissions([
             "add_user",
@@ -53,7 +52,6 @@ class RoleAndPermissionSeeder extends Seeder
             "show_sample_from_project",
             "approve_project"
         ]);
-
         $role = Role::where('name', 'User')->where('guard_name', 'api')->first();
         $role->syncPermissions([
             "add_sample",

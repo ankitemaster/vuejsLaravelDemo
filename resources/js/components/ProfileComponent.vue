@@ -63,6 +63,14 @@
                                     </div>
                                 </div>
                                 <div class="form-group mb-4">
+                                    <label for="company_name" class="col-md-12 p-0">Company Name</label>
+                                    <div class="col-md-12 border-bottom p-0">
+                                        <input name="company_name" type="text" v-model="user.company_name" placeholder="Company Name"
+                                            class="form-control p-0 border-0"
+                                            id="company_name">
+                                    </div>
+                                </div>
+                                <div class="form-group mb-4">
                                     <label for="example-email" class="col-md-12 p-0">Profile Image</label>
                                     <div class="col-md-12 border-bottom p-0">
                                         <input @change="upload_avatar" name="profile" type="file" placeholder="johnathan@admin.com"
@@ -105,6 +113,17 @@
                                         </select>
                                     </div>
                                 </div> -->
+
+                                <div class="form-group mb-4">
+                                    <label class="col-md-12 p-0">Project Name</label>
+                                    <div class="col-md-12 border-bottom p-0">
+                                        <label v-if="projectList.length == 0">There is not project yet</label>
+                                        <label v-for="(item , index) of this.projectList" :key="index">
+                                            {{ item.title + ',' }}
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div class="form-group mb-4">
                                     <div class="col-sm-12">
                                         <button type="submit" class="btn btn-success">Update Profile</button>
@@ -122,10 +141,12 @@
 export default {
     data() {
         return {
+            projectList: [],
             user: {
                 id:JSON.parse(localStorage.getItem('user')).id,
                 name: '',
                 email: '',
+                company_name: '',
                 password: '',
                 avatar: '',
                 mobile: '',
@@ -134,6 +155,11 @@ export default {
         }
     },
     methods: {
+        getProjectList() {
+            axios.get('/api/projects').then((res) => {
+                this.projectList = res.data.data;
+            });
+        },
         redirectToDashboard() {
             this.$router.push({name:'dashboard'});
         },
@@ -142,6 +168,7 @@ export default {
             let formData = new FormData();
             formData.append("name", this.user.name);
             formData.append("mobile", this.user.mobile);
+            formData.append('company_name', this.user.company_name);
             formData.append("profile", this.user.profile);
             formData.append("_method", "put");
             axios.post('/api/users/'+this.user.id,formData).then((res)=>{
@@ -154,6 +181,7 @@ export default {
             axios.get('/api/users/'+this.user.id).then(res=>{
                 this.user.name = res.data.data[0].name;
                 this.user.email = res.data.data[0].email;
+                this.user.company_name = res.data.data[0].company_name;
                 this.user.avatar = res.data.data[0].profile;
                 this.user.mobile = res.data.data[0].mobile;
             });
@@ -170,6 +198,7 @@ export default {
     },
     created() {
         this.getProfile();
+        this.getProjectList();
     }
 }
 </script>
