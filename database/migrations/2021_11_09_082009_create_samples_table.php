@@ -57,7 +57,7 @@ class CreateSamplesTable extends Migration
             // $table->longText('esdRepoSignatureComment')->nullable();
             // $table->longText('bcaRepoSignatureComment')->nullable();
 
-            $table->longText('signatureValues')->default(json_encode([]));
+            $table->longText('signatureValues')->default("[]");
 
             // $table->longText('signatureValues')->default(
             //     json_encode(
