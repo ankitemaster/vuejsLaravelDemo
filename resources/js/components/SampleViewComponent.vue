@@ -169,6 +169,36 @@
                                     </div>
                                 </div>
                             </b-modal>
+
+                            <!--- signature add more fields --->
+                            <br>
+                            <div v-if="add_dynamic_signature_to_sample">
+                                <div class="form-group row" v-for="(input,k) in inputs" :key="k">
+                                    <label for="specification" class="col-md-4 col-form-label text-md-right">Label Name</label>
+                                    <div class="col-md-8">
+                                        <input v-model="input.label_name" type="text" name="label_name" class="form-control" required/>
+                                    </div><br><br>
+                                    <label for="specification" class="col-md-4 col-form-label text-md-right">Select User</label>
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <select required class="form-control" style="width:80%" name="user" v-model="input.user_id" >
+                                                    <option :value="user.id" v-for="(user, index) in users" :key="index">
+                                                        {{ user.name }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span>
+                                                    <i class="fas fa-minus-circle" @click="remove(k)" v-show="k || ( !k && inputs.length > 1)">Remove</i> <br>
+                                                    <i class="fas fa-plus-circle" @click="add(k)" v-show="k == inputs.length-1">Add fields</i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-6">
                                     <button type="submit" class="btn btn-primary">
@@ -176,11 +206,42 @@
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     <div class="col-lg-6 col-xlg-6 col-md-12">
                         <div class="row">
+
                             <div class="form-group row">
+                                <h3 :style="'background: '+overAllStatusColor" class="text-white sample-title">{{ overAllStatus }}</h3>
+                            </div>
+
+                            <div class="form-group row" v-for="(input,k) in inputs" :key="k">
+                                <label for="name" class="col-md-4 col-form-label text-md-right">{{ input.label_name }}</label>
+                                <div class="col-md-8">
+                                    <div class="wrapper" v-if="input.signature == ''">
+                                        <canvas :ref="'signature'+k" :id="'signature-pad'+k" class="signature-pad" width="400" height="200"></canvas>
+                                    </div>
+                                    <div v-if="input.signature != ''">
+                                        <img :src="input.signature"/>
+                                    </div>
+                                    <div v-if="input.signature != '' && update_sign">
+                                        <textarea :placeholder="input.label_name +' Comment'" v-model="input.comment" class="form-control"></textarea><br>
+                                        <select class="form-control" v-model="input.status">
+                                            <option value="0">Signed</option>
+                                            <option value="1">Approved</option>
+                                            <option value="2">Cancelled</option>
+                                        </select><br>
+                                        <a style="float:right;" class="btn btn-primary" @click="changeStatus(k)" ><span> Update Status </span></a>
+                                    </div>
+                                    <div class="clear-btn">
+                                        <a style="float:left;" v-if="input.signature != '' && delete_sign" class="btn btn-danger" @click="deleteSignature(k)" ><span> Delete Signature </span></a>
+                                        <a style="float:right;" v-if="input.signature == ''" class="btn btn-primary" @click="uploadPadSignature(k)" ><span> Save Signature</span></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- <div class="form-group row">
                                 <h3 class="bg-dark text-white sample-title">Approval</h3>
                                 <label for="name" class="col-md-4 col-form-label text-md-right">Client</label>
                                 <div class="col-md-8">
@@ -191,7 +252,6 @@
 
                                     <div class="clear-btn" v-if="this.client_sign == null">
                                         <a class="btn btn-success" @click="uploadPadSignature('client_sign', $refs.mySignature, 'clientSignatureComment',$refs.clientSignatureComment )" id="save"><span> Save </span></a>
-                                        <!-- <a class="btn btn-danger" id="clearsignature-pad1"><span> Clear </span></a> -->
                                         <a v-if="delete_sign" class="btn btn-danger" @click="deleteSignature('client_sign', 'clientSignatureComment')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.client_sign != null">
@@ -201,7 +261,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group row">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">Client Rep</label>
                                 <div class="col-md-8">
@@ -210,8 +269,7 @@
                                         <textarea ref="clientRepSignatureComment" placeholder="ClientRep Signature Comment" v-model="sampleData.clientRepSignatureComment" class="form-control"></textarea>
                                     </div>
                                     <div class="clear-btn" v-if="this.client_rep_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('client_rep_sign', $refs.clientRepoSignature, 'clientRepSignatureComment', $refs.clientRepSignatureComment)" id="save"><span> Save </span></a>
-                                        <!-- <a class="btn btn-danger" id="clearsignature-pad2"><span> Clear </span></a> -->
+                                        <a class="btn btn-success" @click="uploadPadSignature('client_rep_sign', $refs.clientRepoSignature, 'clientRepSignatureComment', $refs.clientRepSignatureComment)" id="save"><span> Save </span></a>\
                                         <a class="btn btn-danger" @click="deleteSignature('client_rep_sign', 'clientRepSignatureComment')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.client_rep_sign != null">
@@ -221,7 +279,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group row">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">Architect</label>
                                 <div class="col-md-8">
@@ -231,7 +288,6 @@
                                     </div>
                                     <div class="clear-btn" v-if="this.architect_sign == null">
                                         <a class="btn btn-success" @click="uploadPadSignature('architect_sign', $refs.architectRepoSignature, 'architectSignatureComment', $refs.architectSignatureComment)" id="save"><span> Save </span></a>
-                                        <!-- <a class="btn btn-danger" id="clearsignature-pad3"><span> Clear </span></a> -->
                                         <a class="btn btn-danger" @click="deleteSignature('architect_sign', 'architectSignatureComment')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.architect_sign != null">
@@ -241,7 +297,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group row">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">Service Consult</label>
                                 <div class="col-md-8">
@@ -251,7 +306,6 @@
                                     </div>
                                     <div class="clear-btn" v-if="this.service_consult_sign == null">
                                         <a class="btn btn-success" @click="uploadPadSignature('service_consult_sign', $refs.serviceRepoSignature, 'serviceRepoSignature', $refs.serviceRepoSignature)" id="save"><span> Save </span></a>
-                                        <!-- <a class="btn btn-danger" id="clearsignature-pad4"><span> Clear </span></a> -->
                                         <a class="btn btn-danger" @click="deleteSignature('service_consult_sign', 'serviceRepoSignature')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.service_consult_sign != 'null'">
@@ -261,7 +315,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group row">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">Structural Consult</label>
                                 <div class="col-md-8">
@@ -271,7 +324,6 @@
                                     </div>
                                     <div class="clear-btn" v-if="this.structural_consult_sign == null">
                                         <a class="btn btn-success" @click="uploadPadSignature('structural_consult_sign', $refs.structuralRepoSignature, 'structuralRepoSignatureComment', $refs.structuralRepoSignatureComment)" id="save"><span> Save </span></a>
-                                        <!-- <a class="btn btn-danger" id="clearsignature-pad5"><span> Clear </span></a> -->
                                         <a class="btn btn-danger" @click="deleteSignature('structural_consult_sign', 'structuralRepoSignatureComment')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.structural_consult_sign != null">
@@ -281,7 +333,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group row">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">ESD</label>
                                 <div class="col-md-8">
@@ -291,7 +342,6 @@
                                     </div>
                                     <div class="clear-btn" v-if="this.esd_sign == null">
                                         <a class="btn btn-success" @click="uploadPadSignature('esd_sign', $refs.esdRepoSignature, 'esdRepoSignature', $refs.esdRepoSignature)" id="save"><span> Save </span></a>
-                                        <!-- <button class="btn btn-danger" id="clearsignature-pad6"><span> Clear </span></button> -->
                                         <a class="btn btn-danger" @click="deleteSignature('esd_sign', 'esdRepoSignature')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.esd_sign != null">
@@ -301,7 +351,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-group row">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">BCA</label>
                                 <div class="col-md-8">
@@ -311,7 +360,6 @@
                                     </div>
                                     <div class="clear-btn" v-if="this.bca_sign == null">
                                         <a class="btn btn-success" @click="uploadPadSignature('bca_sign', $refs.bcaRepoSignature, 'bcaRepoSignature', $refs.bcaRepoSignature)" id="save"><span> Save </span></a>
-                                        <!-- <a class="btn btn-danger" id="clearsignature-pad7"><span> Clear </span></a> -->
                                         <a class="btn btn-danger" @click="deleteSignature('bca_sign', 'bcaRepoSignature')" ><span> Delete </span></a>
                                     </div>
                                     <div v-if="this.bca_sign != null">
@@ -320,7 +368,7 @@
                                         <a class="btn btn-danger" @click="deleteSignature('bca_sign', 'bcaRepoSignature')" ><span> Delete </span></a>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -332,13 +380,21 @@
 import moment from 'moment';
 import dataURLtoBlob from 'blueimp-canvas-to-blob';
 import swal from 'sweetalert2';
+import Multiselect from 'vue-multiselect';
 export default {
     name: 'view-sample',
     data() {
         return {
+            overAllStatusColor: 'orange',
+            overAllStatus: 'Pending',
+            signatureStatus: [
+                'signed',
+                'approved',
+                'cancelled'
+            ],
             projectName: '',
             fileRecords: [],
-            uploadUrl: 'http://localhost:8000/api/samples/sampleTypePhotoUpload/'+this.$route.params.id,
+            uploadUrl: 'http://18.223.248.192/api/samples/sampleTypePhotoUpload/'+this.$route.params.id,
             uploadHeaders: { 'X-Test-Header': 'vue-file-agent', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
             fileRecordsForUpload: [], // maintain an upload queue
             sampleData: {},
@@ -351,12 +407,42 @@ export default {
             bca_sign: null,
             avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6VkVrykv609kj3hwVZHvkxDsy0EqGR19_lA&usqp=CAU',
             techavatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6VkVrykv609kj3hwVZHvkxDsy0EqGR19_lA&usqp=CAU',
-            delete_sign: false,
             sampleTypePhotos: [],
             techDataPhotos: [],
+            users: [],
+            inputs: [],
+            update_sign: false,
+            add_dynamic_signature_to_sample: false,
+            delete_sign: false,
         }
     },
+    components: {
+        Multiselect
+    },
     methods: {
+        getPermission() {
+            axios.get('/api/users/permission/update_sign').then((response) => {
+                this.update_sign = response.data;
+            });
+            axios.get('/api/users/permission/add_dynamic_signature_to_sample').then((response) => {
+                this.add_dynamic_signature_to_sample = response.data;
+            });
+            axios.get('/api/users/permission/delete_sign').then((response) => {
+                this.delete_sign = response.data;
+            });
+        },
+        add () {
+            this.inputs.push({
+                label_name: '',
+                user_id: '',
+                signature: '',
+                comment: '',
+                status: 0
+            })
+        },
+        remove (index) {
+            this.inputs.splice(index, 1)
+        },
         removeItemOnce(arr, value) {
             var index = arr.indexOf(value);
             if (index > -1) {
@@ -432,7 +518,6 @@ export default {
                 } else {
                     this.sampleTypePhotos = this.sampleData.sample_type_photo;
                 }
-
                 this.techDataPhotos = [];
                 if(this.sampleData.tech_data_photo.length == 0) {
                     this.techDataPhotos = [];
@@ -449,7 +534,45 @@ export default {
                 this.sampleData.subcontractor = JSON.parse(localStorage.getItem('user')).name;
 
                 this.projectName = this.sampleData.project.title;
+
+                let sampleDateSignatureValues = this.sampleData.signatureValues;
+                if(sampleDateSignatureValues == "[]") {
+                    sampleDateSignatureValues = [];
+                }
+                delete this.sampleData.signatureValues;
+                this.inputs = [];
+                if(sampleDateSignatureValues.length == 0) {
+                    this.overAllStatus = 'Pending';
+                    this.overAllStatusColor = 'orange';
+                    this.inputs.push(
+                        {
+                            label_name: '',
+                            user_id: '',
+                            signature: '',
+                            comment: '',
+                            status: 0
+                        }
+                    );
+                } else {
+                    this.inputs = sampleDateSignatureValues;
+                    let sampleCheck = sampleDateSignatureValues.map((element) => {
+                        return parseInt(element.status);
+                    });
+                    if(this.allEqual(sampleCheck)) {
+                        if(sampleCheck[0] == 1) {
+                            this.overAllStatusColor = 'green';
+                            this.overAllStatus = 'Approved';
+                        } else if(sampleCheck[0] == 2) {
+                            this.overAllStatusColor = 'red';
+                            this.overAllStatus = 'All Rejected';
+                        }
+                    }
+                }
+                setTimeout(() => this.initailAllCanvas() , 2000);
             });
+        },
+        allEqual(arr) {
+            return new Set(arr).size == 1;
         },
         addPhoto() {
             document.getElementById("fileUpload").click();
@@ -486,7 +609,6 @@ export default {
         updateSample() {
             let formData = new FormData();
             formData.append('_method', 'put');
-            console.log(this.fileRecordsForUpload);
             _.each(this.sampleData, (value, key) => {
                 if(key == "sample_type_photo") {
                     if(this.fileRecordsForUpload.length > 0)
@@ -504,39 +626,16 @@ export default {
                     formData.append(key, value)
                 }
             });
+            formData.append('signatureValues', JSON.stringify(this.inputs));
             axios.post('/api/samples/'+this.$route.params.id, formData).then((res) => {
-                // window.location.reload()
+                window.location.reload()
             });
         },
         initailAllCanvas() {
-            if(!this.sampleData.client_sign)
-            {
-                this.initailSign("signature-pad1");
-            }
-            if(!this.sampleData.client_rep_sign)
-            {
-                this.initailSign("signature-pad2");
-            }
-            if(!this.sampleData.architect_sign)
-            {
-                this.initailSign("signature-pad3");
-            }
-            if(!this.sampleData.service_consult_sign)
-            {
-                this.initailSign("signature-pad4");
-            }
-            if(!this.sampleData.structural_consult_sign)
-            {
-                this.initailSign("signature-pad5");
-            }
-            if(!this.sampleData.esd_sign)
-            {
-                this.initailSign("signature-pad6");
-            }
-            if(!this.sampleData.client_sign)
-            {
-                this.initailSign("signature-pad7");
-            }
+            this.inputs.forEach((element, i) => {
+                if(document.getElementById("signature-pad"+i))
+                this.initailSign("signature-pad"+i);
+            });
         },
         initailSign(id) {
             var canvas = document.getElementById(id);
@@ -556,15 +655,15 @@ export default {
             //     signaturePad.clear();
             // })
         },
-        uploadPadSignature(key, signature, commentKey, commentValue) {
-            if(commentValue.value == '') {
-                new swal({
-                    title: 'Warning',
-                    text: 'please add comment first',
-                    type: 'warning',
-                });
-            } else {
-                var files = signature.toDataURL('image/png');
+        uploadPadSignature(k) {
+            // if(commentValue.value == '') {
+            //     new swal({
+            //         title: 'Warning',
+            //         text: 'please add comment first',
+            //         type: 'warning',
+            //     });
+            // } else {
+                var files = this.$refs['signature'+k][0].toDataURL('image/png');
                 var file = dataURLtoBlob(files);
                 file = new File([file], "signature.png", {
                     type: "image/jpeg",
@@ -572,20 +671,27 @@ export default {
                 });
                 let formData = new FormData();
                 formData.append('sign', file);
-                formData.append('key', key);
-                formData.append('commentKey', commentKey);
-                formData.append('commentValue', commentValue.value);
-
+                formData.append('key', k);
+                // formData.append('commentValue', this.$refs['comment'+k][0].value);
+                console.log(formData);
                 axios.post('/api/samples/signatureUpload/'+this.$route.params.id, formData).then((res) => {
                     window.location.reload();
                 });
-            }
+            // }
         },
-        deleteSignature(key, commentKey) {
+        deleteSignature(key) {
             let formData = new FormData();
             formData.append('key', key);
-            formData.append('commentKey', commentKey);
             axios.post('/api/samples/deleteSignature/'+this.$route.params.id, formData).then((res) => {
+                window.location.reload();
+            });
+        },
+        changeStatus(key) {
+            let formData = new FormData();
+            formData.append('key', key);
+            formData.append('comment', this.inputs[key].comment);
+            formData.append('status', this.inputs[key].status)
+            axios.post('/api/samples/updateSignature/'+this.$route.params.id, formData).then((res) => {
                 window.location.reload();
             });
         },
@@ -595,18 +701,21 @@ export default {
         },
         changeUploadUrl(type) {
             if(type == 'sample_type') {
-                this.uploadUrl = 'http://localhost:8000/api/samples/sampleTypePhotoUpload/'+this.$route.params.id;
+                this.uploadUrl = 'http://18.223.248.192/api/samples/sampleTypePhotoUpload/'+this.$route.params.id;
             } else {
-                this.uploadUrl ='http://localhost:8000/api/samples/techDataPhotoUpload/'+this.$route.params.id;
+                this.uploadUrl ='http://18.223.248.192/api/samples/techDataPhotoUpload/'+this.$route.params.id;
             }
-        }
+        },
+        getUserList() {
+            axios.get('/api/users').then(response=> {
+                this.users = response.data.data
+            });
+        },
     },
     created() {
         this.getSampleDetail();
-        axios.get('/api/users/permission/delete_sign').then((response) => {
-            this.delete_sign = response.data;
-        });
-        setTimeout(() => this.initailAllCanvas() , 2000)
+        this.getUserList();
+        this.getPermission();
     }
 }
 </script>

@@ -36,7 +36,10 @@ class RoleAndPermissionSeeder extends Seeder
             "add_sample",
             "upload_photo_to_sample",
             "sign_sample",
-            "delete_sign"
+            "delete_sign",
+            "update_sign",
+            "add_user_to_sample",
+            "add_dynamic_signature_to_sample"
         ];
         foreach($permissions as $permission) {
             Permission::create(['guard_name' => 'api', 'name' => $permission]);
@@ -50,7 +53,11 @@ class RoleAndPermissionSeeder extends Seeder
             "delete_user_to_project",
             "hide_sample_from_project",
             "show_sample_from_project",
-            "approve_project"
+            "approve_project",
+            "add_user_to_sample",
+            "update_sign",
+            "delete_sign",
+            "add_dynamic_signature_to_sample"
         ]);
         $role = Role::where('name', 'User')->where('guard_name', 'api')->first();
         $role->syncPermissions([

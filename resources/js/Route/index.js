@@ -72,7 +72,7 @@ const routes = [
             auth: true
         },
         component: () => import('./../components/EditUserComponent')
-    },
+    }
 ];
 
 const router = new VueRouter({

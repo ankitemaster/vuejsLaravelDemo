@@ -4,7 +4,6 @@ import router from './Route/index';
 import store from './Store/index';
 import Toasted from 'vue-toasted';
 import VueFileAgent from 'vue-file-agent';
-import VueFileAgentStyles from 'vue-file-agent/dist/vue-file-agent.css';
 
 import BootstrapVue from 'bootstrap-vue';
 import Vue from 'vue';

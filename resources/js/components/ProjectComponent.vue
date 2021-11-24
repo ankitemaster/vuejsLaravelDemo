@@ -31,6 +31,7 @@
                                             <th class="border-top-0">Title</th>
                                             <th class="border-top-0">Description</th>
                                             <th class="border-top-0">Active</th>
+                                            <th class="border-top-0">Summary</th>
                                             <th class="border-top-0">Complete</th>
                                             <th class="border-top-0">Action</th>
                                         </tr>
@@ -41,6 +42,7 @@
                                             <td>{{ project.title }}</td>
                                             <td>{{ project.description }}</td>
                                             <td>{{ project.is_active ? true : false }}</td>
+                                            <td><a class="btn btn-primary" target="_blank" :href="'/seeSampleStatus/'+project.id">See</a></td>
                                             <td>{{ project.description ? true : false }}</td>
                                             <td>
                                                 <router-link :v-if="view_project" :to="{ path: '/view-project/'+project.id }">

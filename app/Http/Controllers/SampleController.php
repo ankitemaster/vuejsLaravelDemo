@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SampleExport;
 use App\Models\Sample;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SampleController extends Controller
 {
@@ -89,26 +93,20 @@ class SampleController extends Controller
         } else {
             $sample->tech_data_photo = [];
         }
-        if($sample->client_sign) {
-            $sample->client_sign = $baseUrl.$sample->client_sign;
-        }
-        if($sample->client_rep_sign) {
-            $sample->client_rep_sign = $baseUrl.$sample->client_rep_sign;
-        }
-        if($sample->architect_sign) {
-            $sample->architect_sign = $baseUrl.$sample->architect_sign;
-        }
-        if($sample->service_consult_sign) {
-            $sample->service_consult_sign = $baseUrl.$sample->service_consult_sign;
-        }
-        if($sample->structural_consult_sign) {
-            $sample->structural_consult_sign = $baseUrl.$sample->structural_consult_sign;
-        }
-        if($sample->esd_sign) {
-            $sample->esd_sign = url('images').'/'.$sample->esd_sign;
-        }
-        if($sample->bca_sign) {
-            $sample->bca_sign = url('images').'/'.$sample->bca_sign;
+
+        $signatureValues = json_decode($sample->signatureValues);
+        $signatureValuesArray = [];
+        if(count($signatureValues) > 0) {
+            foreach($signatureValues as $key=>$value) {
+                if($signatureValues[$key]->signature != '')
+                {
+                    $signatureValues[$key]->signature = $baseUrl.$signatureValues[$key]->signature;
+                } else {
+                    $signatureValues[$key]->signature = '';
+                }
+                array_push($signatureValuesArray, $signatureValues[$key]);
+            }
+            $sample->signatureValues = $signatureValuesArray;
         }
         return response()->json([
             'status' => true,
@@ -137,8 +135,9 @@ class SampleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $allRequest = $request->except(['sample_type_photo','tech_data_photo','id','_method', 'updated_at', 'client_sign', 'client_rep_sign', 'architect_sign', 'service_consult_sign', 'structural_consult_sign', 'esd_sign', 'bca_sign', 'project', 'clientSignatureComment', 'clientRepSignatureComment', 'architectSignatureComment', 'serviceRepoSignatureComment', 'structuralRepoSignatureComment', 'esdRepoSignatureComment', 'bcaRepoSignatureComment']);
+        $allRequest = $request->except(['sample_type_photo','tech_data_photo','id','_method', 'updated_at', 'client_sign', 'client_rep_sign', 'architect_sign', 'service_consult_sign', 'structural_consult_sign', 'esd_sign', 'bca_sign', 'project', 'clientSignatureComment', 'clientRepSignatureComment', 'architectSignatureComment', 'serviceRepoSignatureComment', 'structuralRepoSignatureComment', 'esdRepoSignatureComment', 'bcaRepoSignatureComment', 'signatureValues']);
         $allRequest['created_at'] = date('Y-m-d H:i:s', strtotime($request->created_at));
+        $allRequest['signatureValues'] = $request->signatureValues;
         Sample::where('id', $id)->update($allRequest);
         return response()->json([
             'status' => true,
@@ -276,17 +275,18 @@ class SampleController extends Controller
     public function signatureUpload(Request $request, $id)
     {
         $name = "";
+        $key = $request->key;
         if($request->hasFile('sign')) {
             $image = $request->file('sign');
             $name = time().'.'.$image->getClientOriginalExtension();
             $destinationPath = public_path('/images');
             $image->move($destinationPath, $name);
         }
-        $key = $request->key;
-        $commentKey = $request->commentKey;
         $sample = Sample::where('id', $id)->first();
-        $sample->$key = $name;
-        $sample->$commentKey = $request->commentValue;
+        $signatureValues = json_decode($sample->signatureValues);
+        $signatureValues[$key]->signature = $name;
+        // $signatureValues[$key]->comment = $request->commentValue;
+        $sample->signatureValues = json_encode($signatureValues);
         $sample->save();
         return response()->json([
             'status' => true,
@@ -295,18 +295,62 @@ class SampleController extends Controller
     }
 
     /**
-     * deleteSignature
+     * update signature
      */
-    public function deleteSignature(Request $request, $id) {
+    public function updateSignature(Request $request, $id)
+    {
         $key = $request->key;
-        $commentKey = $request->commentKey;
         $sample = Sample::where('id', $id)->first();
-        $sample->$key = NULL;
-        $sample->$commentKey = NULL;
+        $signatureValues = json_decode($sample->signatureValues);
+        $signatureValues[$key]->comment = $request->comment;
+        $signatureValues[$key]->status = $request->status;
+        $sample->signatureValues = json_encode($signatureValues);
         $sample->save();
         return response()->json([
             'status' => true,
-            'message' => 'Deleted Signature Successfully'
+            'message' => 'Updated Signature Successfully'
         ]);
+    }
+
+    /**
+     * deleteSignature
+     */
+    public function deleteSignature(Request $request, $id) {
+
+        $name = "";
+        $key = $request->key;
+        if($request->hasFile('sign')) {
+            $image = $request->file('sign');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+        }
+        $sample = Sample::where('id', $id)->first();
+        $signatureValues = json_decode($sample->signatureValues);
+        $signatureValuesArray = [];
+        foreach($signatureValues as $key1=>$value) {
+            if($key != $key1) {
+                array_push($signatureValuesArray, $signatureValues[$key1]);
+            } else {
+                $signatureValues[$key]->signature = '';
+                $signatureValues[$key]->comment = '';
+                $signatureValues[$key]->status = 0;
+                array_push($signatureValuesArray, $signatureValues[$key1]);
+            }
+        }
+        $sample->signatureValues = json_encode($signatureValuesArray);
+        $sample->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Signature Deleted Successfully'
+        ]);
+    }
+
+    public function seeSampleStatus($id) {
+        $fileName = 'public/samples'.strtotime(date('Y-m-d H:i:s')).'.pdf';
+        Excel::store(new SampleExport($id), $fileName);
+        $url = env('APP_URL').'/storage/'.$fileName;
+        $url = str_replace('/public', '', $url);
+        echo "<iframe style='width:100%; height:100vh;' src='".$url."'></iframe>";
     }
 }

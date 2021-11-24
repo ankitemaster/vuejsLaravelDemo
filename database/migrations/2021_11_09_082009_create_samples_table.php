@@ -41,21 +41,23 @@ class CreateSamplesTable extends Migration
             $table->string('sample_type_photo', 200)->nullable();
             $table->string('tech_data_photo', 200)->nullable();
 
-            $table->string('client_sign', 200)->nullable();
-            $table->string('client_rep_sign', 200)->nullable();
-            $table->string('architect_sign', 200)->nullable();
-            $table->string('service_consult_sign', 200)->nullable();
-            $table->string('structural_consult_sign', 200)->nullable();
-            $table->string('esd_sign', 200)->nullable();
-            $table->string('bca_sign', 200)->nullable();
+            // $table->string('client_sign', 200)->nullable();
+            // $table->string('client_rep_sign', 200)->nullable();
+            // $table->string('architect_sign', 200)->nullable();
+            // $table->string('service_consult_sign', 200)->nullable();
+            // $table->string('structural_consult_sign', 200)->nullable();
+            // $table->string('esd_sign', 200)->nullable();
+            // $table->string('bca_sign', 200)->nullable();
 
-            $table->longText('clientSignatureComment')->nullable();
-            $table->longText('clientRepSignatureComment')->nullable();
-            $table->longText('architectSignatureComment')->nullable();
-            $table->longText('serviceRepoSignatureComment')->nullable();
-            $table->longText('structuralRepoSignatureComment')->nullable();
-            $table->longText('esdRepoSignatureComment')->nullable();
-            $table->longText('bcaRepoSignatureComment')->nullable();
+            // $table->longText('clientSignatureComment')->nullable();
+            // $table->longText('clientRepSignatureComment')->nullable();
+            // $table->longText('architectSignatureComment')->nullable();
+            // $table->longText('serviceRepoSignatureComment')->nullable();
+            // $table->longText('structuralRepoSignatureComment')->nullable();
+            // $table->longText('esdRepoSignatureComment')->nullable();
+            // $table->longText('bcaRepoSignatureComment')->nullable();
+
+            $table->longText('signatureValues')->default(json_encode([]));
 
             // $table->longText('signatureValues')->default(
             //     json_encode(
