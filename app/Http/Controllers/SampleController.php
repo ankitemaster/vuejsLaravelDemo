@@ -48,7 +48,8 @@ class SampleController extends Controller
         $nextId = $statement[0]->Auto_increment;
         Sample::create([
             'title' => 'SAMP-00'.$nextId,
-            'project_id' => $request->project_id
+            'project_id' => $request->project_id,
+            'signatureValues' => json_encode([])
         ]);
         return response()->json([
             'status' => true,
