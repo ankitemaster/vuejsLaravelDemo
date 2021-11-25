@@ -37,7 +37,7 @@ Vue.use(VueFileAgent);
 Vue.mixin({
     methods: {
         can(permissionName) {
-            axios.get('/api/users/permission/'+permissionName).then((response) => {
+            axios.get('/api/users/permission/' + permissionName).then((response) => {
                 return response.data;
             });
         }

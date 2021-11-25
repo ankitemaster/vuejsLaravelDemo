@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Http\Controllers\SampleController;
+use App\Models\Project;
 use App\Models\Sample;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -18,6 +18,7 @@ class SampleExport implements FromView
 
     public function view(): View
     {
+        $projectName = Project::where('id', $this->projectId)->first()->title;
         $samples = Sample::where('project_id', $this->projectId)->get();
         foreach($samples as $key=>$sample) {
             $total_signature = json_decode($sample->signatureValues);
@@ -46,7 +47,8 @@ class SampleExport implements FromView
             $sample->rejected_signature = $rejected_signature_count;
         }
         return view('exports.samples', [
-            'samples' => $samples
+            'samples' => $samples,
+            'projectName' => $projectName
         ]);
     }
 }

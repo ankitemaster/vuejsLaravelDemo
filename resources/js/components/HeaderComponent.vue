@@ -9,6 +9,12 @@
                     <span class="logo-text">
                         <img src="/plugins/images/logo-text.png" alt="homepage" />
                     </span> -->
+                    <b class="logo-icon">
+                        <img style="width: 86px;height: 57px;" src="/images/darklogo.png" alt="homepage" />
+                    </b>
+                    <!-- <span class="logo-text">
+                        <img src="/images/lightlogo.png" alt="homepage" />
+                    </span> -->
                     {{ this.username }}
                 </a>
                 <a class="nav-toggler waves-effect waves-light text-dark d-block d-md-none"

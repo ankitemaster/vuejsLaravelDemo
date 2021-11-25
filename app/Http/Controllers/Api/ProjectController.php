@@ -47,12 +47,12 @@ class ProjectController extends Controller
     public function update(Request $request, $id) {
         $project = Project::where('id', $id)->update($request->except('add_user_to_project', 'delete_user_to_project', 'project_users', 'inputs'));
         UserProject::where('project_id', $id)->delete();
-        foreach($request->project_users as $project_user) {
-            $userProject = UserProject::where('user_id' , $project_user['id'])->where('project_id' , $project->id)->first();
+        foreach($request->project_users as $key=>$project_user) {
+            $userProject = UserProject::where('user_id' , $request->project_users[$key]['id'])->where('project_id' , $id)->first();
             if(!isset($userProject->id)) {
                 UserProject::create([
-                    'user_id' => $project_user['id'],
-                    'project_id' => $project->id
+                    'user_id' => $request->project_users[$key]['id'],
+                    'project_id' => $id
                 ]);
             }
         }
