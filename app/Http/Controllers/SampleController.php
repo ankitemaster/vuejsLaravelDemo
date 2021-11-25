@@ -44,8 +44,14 @@ class SampleController extends Controller
      */
     public function store(Request $request)
     {
-        $statement = DB::select("SHOW TABLE STATUS LIKE 'samples'");
-        $nextId = $statement[0]->Auto_increment;
+        $sample = Sample::where('project_id', $request->project_id)->orderBy('id', 'DESC')->first();
+        if(isset($sample->id)) {
+            $nextId = (int)$sample->id + 1;
+        } else {
+            $nextId = 1;
+        }
+        // $statement = DB::select("SHOW TABLE STATUS LIKE 'samples'");
+        // $nextId = $statement[0]->Auto_increment;
         Sample::create([
             'title' => 'SAMP-00'.$nextId,
             'project_id' => $request->project_id,
