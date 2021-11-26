@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\SampleExport;
+use App\Models\Project;
 use App\Models\Sample;
 use Illuminate\Http\Request;
 use DB;
@@ -354,10 +355,88 @@ class SampleController extends Controller
     }
 
     public function seeSampleStatus($id) {
-        $fileName = 'public/samples'.strtotime(date('Y-m-d H:i:s')).'.pdf';
-        Excel::store(new SampleExport($id), $fileName);
-        $url = env('APP_URL').'/storage/'.$fileName;
-        $url = str_replace('/public', '', $url);
-        echo "<iframe style='width:100%; height:100vh;' src='".$url."'></iframe>";
+        $projectName = Project::where('id', $id)->first()->title;
+        $samples = Sample::where('project_id', $id)->get();
+
+        $allFieldArray = array();
+        foreach($samples as $key=>$sample) {
+            if(count(json_decode($sample->signatureValues)) > 0){
+                $tempArray = json_decode($sample->signatureValues);
+                foreach($tempArray as $key1=>$value1) {
+                    $tempArray[$key1]->label_name = strtolower($tempArray[$key1]->label_name);
+                }
+                $allFieldArray = array_merge($allFieldArray, $tempArray);
+            }
+        }
+
+        $dynamicFields = collect($allFieldArray)->map(function ($name) {
+            return strtolower($name->label_name);
+        })->reject(function ($name) {
+            return empty($name);
+        })->toArray();
+
+        $headers = ['Sample Title', 'Description', 'Manufacturer', 'Model No', 'Finish'];
+        $headers = array_merge($headers, $dynamicFields);
+        $headers = array_merge($headers, ['Sample Url', 'Overall Status', 'Comments']);
+
+        $samplesArray = array();
+        foreach($samples as $key=>$sample) {
+            $object = new \stdClass();
+            $object->title = $sample->title;
+            $object->description = $sample->description;
+            $object->manufacturer = $sample->manufacturer;
+            $object->model_no = $sample->model_no;
+            $object->finish = $sample->finish;
+
+            $dynamicFieldsValueArray = array();
+            $signatureValues = json_decode($sample->signatureValues);
+
+            $comments = collect($signatureValues)->map(function ($name) {
+                return $name->comment;
+            })->reject(function ($name) {
+                return empty($name);
+            });
+
+            $comments = $comments->toArray();
+            $comments = implode(",", $comments);
+            foreach($dynamicFields as $val) {
+                $fieldValue = 'NA';
+                foreach($signatureValues as $val1) {
+                    if($val == $val1->label_name) {
+                        if($val1->signature == '') {
+                            $fieldValue = 'No';
+                        } else {
+                            if($val1->status == 1) {
+                                $fieldValue = 'Approved';
+                            } else if($val1->status == 2) {
+                                $fieldValue = 'Rejected';
+                            }else {
+                                $fieldValue = 'Yes';
+                            }
+                        }
+                    }
+                }
+                array_push($dynamicFieldsValueArray, $fieldValue);
+            }
+            $object->dynamic_fields = $dynamicFieldsValueArray;
+            $object->sample_url = '';
+            $object->overall_status = '';
+            $object->comments = $comments;
+            array_push($samplesArray, $object);
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'data',
+            'data' => [
+                'samples' => $samplesArray,
+                'projectName' => $projectName,
+                'dynamicFields'=> $dynamicFields
+            ]
+        ]);
+        // $fileName = 'public/samples'.strtotime(date('Y-m-d H:i:s')).'.pdf';
+        // Excel::store(new SampleExport($id), $fileName);
+        // $url = env('APP_URL').'/storage/'.$fileName;
+        // $url = str_replace('/public', '', $url);
+        // echo "<iframe style='width:100%; height:100vh;' src='".$url."'></iframe>";
     }
 }

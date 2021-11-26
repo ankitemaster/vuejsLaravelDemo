@@ -29,4 +29,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('samples/updateSignature/{id}', [App\Http\Controllers\SampleController::class, 'updateSignature']);
     Route::post('samples/techDataPhotoUpload/{id}', [App\Http\Controllers\SampleController::class, 'techDataPhotoUpload']);
     Route::post('samples/deleteTechDataPhotoUpload/{id}', [App\Http\Controllers\SampleController::class, 'deleteTechDataPhotoUpload']);
+
+    Route::get('/seeSampleStatus/{id}', [\App\Http\Controllers\SampleController::class, 'seeSampleStatus'])->name('seeSampleStatus');
 });

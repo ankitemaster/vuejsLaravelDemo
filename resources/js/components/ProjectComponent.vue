@@ -42,7 +42,11 @@
                                             <td>{{ project.title }}</td>
                                             <td>{{ project.description }}</td>
                                             <td>{{ project.is_active ? true : false }}</td>
-                                            <td><a class="btn btn-primary" target="_blank" :href="'/seeSampleStatus/'+project.id">See</a></td>
+                                            <td>
+                                                <router-link :v-if="view_project" :to="{ path: '/sample/all/'+project.id }">
+                                                    <button class="btn btn-primary" >See</button>
+                                                </router-link>
+                                            </td>
                                             <td>{{ project.description ? true : false }}</td>
                                             <td>
                                                 <router-link :v-if="view_project" :to="{ path: '/view-project/'+project.id }">

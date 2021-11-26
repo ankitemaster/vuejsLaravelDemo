@@ -1,13 +1,13 @@
 import VueRouter from 'vue-router';
 
-const routes = [
-    {
+const routes = [{
         path: '/dashboard',
         name: 'dashboard',
         meta: {
             auth: true
         },
-        component: () => import('./../components/DashboardComponent')
+        component: () =>
+            import ('./../components/DashboardComponent')
     },
     {
         path: '/profile',
@@ -15,7 +15,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/ProfileComponent')
+        component: () =>
+            import ('./../components/ProfileComponent')
     },
     {
         path: '/project',
@@ -23,7 +24,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/ProjectComponent')
+        component: () =>
+            import ('./../components/ProjectComponent')
     },
     {
         path: '/add-project',
@@ -31,7 +33,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/AddProjectComponent')
+        component: () =>
+            import ('./../components/AddProjectComponent')
     },
     {
         path: '/view-project/:id',
@@ -39,7 +42,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/ProjectViewComponent')
+        component: () =>
+            import ('./../components/ProjectViewComponent')
     },
     {
         path: '/edit-project/:id',
@@ -47,7 +51,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/AddProjectComponent')
+        component: () =>
+            import ('./../components/AddProjectComponent')
     },
     {
         path: '/view-sample/:id',
@@ -55,7 +60,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/SampleViewComponent')
+        component: () =>
+            import ('./../components/SampleViewComponent')
     },
     {
         path: '/role-and-permission',
@@ -63,7 +69,17 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/RoleAndPermission')
+        component: () =>
+            import ('./../components/RoleAndPermission')
+    },
+    {
+        path: '/sample/all/:id',
+        name: 'sample-all',
+        meta: {
+            auth: true
+        },
+        component: () =>
+            import ('./../components/SampleAllComponent')
     },
     {
         path: '/users/edit/:id',
@@ -71,7 +87,8 @@ const routes = [
         meta: {
             auth: true
         },
-        component: () => import('./../components/EditUserComponent')
+        component: () =>
+            import ('./../components/EditUserComponent')
     }
 ];
 
@@ -85,7 +102,7 @@ router.beforeEach((to, from, next) => {
     const loggedIn = localStorage.getItem('user')
     if (to.matched.some(record => record.meta.auth) && !loggedIn) {
         window.location.href = '/login';
-      return
+        return
     }
     next()
 });
