@@ -375,6 +375,8 @@ class SampleController extends Controller
             return empty($name);
         })->toArray();
 
+        $dynamicFields = array_unique($dynamicFields, SORT_REGULAR);
+
         $headers = ['Sample Title', 'Description', 'Manufacturer', 'Model No', 'Finish'];
         $headers = array_merge($headers, $dynamicFields);
         $headers = array_merge($headers, ['Sample Url', 'Overall Status', 'Comments']);
@@ -402,7 +404,7 @@ class SampleController extends Controller
             foreach($dynamicFields as $val) {
                 $fieldValue = 'NA';
                 foreach($signatureValues as $val1) {
-                    if($val == $val1->label_name) {
+                    if(strtolower(trim($val)) == strtolower(trim($val1->label_name))) {
                         if($val1->signature == '') {
                             $fieldValue = 'No';
                         } else {
@@ -418,6 +420,7 @@ class SampleController extends Controller
                 }
                 array_push($dynamicFieldsValueArray, $fieldValue);
             }
+
             $object->dynamic_fields = $dynamicFieldsValueArray;
             $object->sample_url = '';
             $object->overall_status = '';

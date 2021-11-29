@@ -27,6 +27,7 @@
                                         <td>{{ item.description }}</td>
                                         <td>{{ item.manufacturer }}</td>
                                         <td>{{ item.model_no }}</td>
+
                                         <td v-for="(item1, index1) of item.dynamic_fields" :key="index1">{{ item1 }}</td>
                                         <td>{{ item.finish }}</td>
                                         <td>{{ item.manufacturer }}</td>
