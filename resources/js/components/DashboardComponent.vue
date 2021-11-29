@@ -74,7 +74,7 @@
                         <div class="d-md-flex mb-3">
                             <h3 class="box-title mb-0">Users</h3>
                             <div class="col-md-2 col-sm-2 col-xs-2 ms-auto">
-                                <b-button v-b-modal="'user-add'">Add User</b-button>
+                                <b-button v-if="add_user" v-b-modal="'user-add'">Add User</b-button>
                             </div>
                             <div class="col-md-3 col-sm-4 col-xs-3">
                                 <input @change="getUserList()" type="text" v-model="userSearchValue" class="form-select shadow-none row border-top"/>
