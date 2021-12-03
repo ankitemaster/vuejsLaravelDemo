@@ -29,7 +29,6 @@ class CreateSamplesTable extends Migration
             $table->string('sample_url')->nullable();
             $table->longText('overall_status')->nullable();
             $table->longText('comments')->nullable();
-
             $table->string('sample_no', 200)->nullable();
             $table->string('subcontractor', 200)->nullable();
             $table->string('location_used', 200)->nullable();
@@ -40,76 +39,9 @@ class CreateSamplesTable extends Migration
             $table->string('warrenty_period', 200)->nullable();
             $table->string('sample_type_photo', 200)->nullable();
             $table->string('tech_data_photo', 200)->nullable();
-
-            // $table->string('client_sign', 200)->nullable();
-            // $table->string('client_rep_sign', 200)->nullable();
-            // $table->string('architect_sign', 200)->nullable();
-            // $table->string('service_consult_sign', 200)->nullable();
-            // $table->string('structural_consult_sign', 200)->nullable();
-            // $table->string('esd_sign', 200)->nullable();
-            // $table->string('bca_sign', 200)->nullable();
-
-            // $table->longText('clientSignatureComment')->nullable();
-            // $table->longText('clientRepSignatureComment')->nullable();
-            // $table->longText('architectSignatureComment')->nullable();
-            // $table->longText('serviceRepoSignatureComment')->nullable();
-            // $table->longText('structuralRepoSignatureComment')->nullable();
-            // $table->longText('esdRepoSignatureComment')->nullable();
-            // $table->longText('bcaRepoSignatureComment')->nullable();
-
+            $table->enum('status', ['Approved', 'Rejected', 'In Progress'])->default('In Progress');
             $table->longText('signatureValues')->nullable();
-
-            // $table->longText('signatureValues')->default(
-            //     json_encode(
-            //         [
-            //             [
-            //                 "role_name" => "client_sign",
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id' => null
-            //             ],
-            //             [
-            //                 'role_name' => 'client_rep_sign',
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id'=> null
-            //             ],
-            //             [
-            //                 "role_name" => "architect_sign",
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id' => null
-            //             ],
-            //             [
-            //                 'role_name' => 'service_consult_sign',
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id'=> null
-            //             ],
-            //             [
-            //                 "role_name" => "structural_consult_sign",
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id' => null
-            //             ],
-            //             [
-            //                 'role_name' => 'esd_sign',
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id'=> null
-            //             ],
-            //             [
-            //                 'role_name' => 'bca_sign',
-            //                 'comment' => '',
-            //                 'status' => '0',
-            //                 'user_id'=> null
-            //             ],
-            //         ]
-            //     )
-            // );
-
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
-
             $table->timestamps();
         });
     }

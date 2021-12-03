@@ -89,6 +89,15 @@ const routes = [{
         },
         component: () =>
             import ('./../components/EditUserComponent')
+    },
+    {
+        path: '/sample/logs/:id',
+        name: 'sample-logs',
+        meta: {
+            auth: true
+        },
+        component: () =>
+            import ('./../components/SampleLogComponent')
     }
 ];
 

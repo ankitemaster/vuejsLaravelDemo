@@ -8,6 +8,22 @@
                         <div class="row">
                             <div class="form-group row">
                                 <h3 class="bg-dark text-white sample-title">Sample Details</h3>
+
+                                <div class="row">
+                                    <button style="float:left; width: 150px;" @click="changeSampleStatus('In Progress')" class="btn btn-primary">In Progress</button> &nbsp;&nbsp;
+                                    <button style="float:left; width: 150px;" @click="changeSampleStatus('Approved')" class="btn btn-success">Approved</button> &nbsp;&nbsp;
+                                    <button style="float:left; width: 150px;" @click="changeSampleStatus('Rejected')" class="btn btn-danger">Rejected</button> &nbsp;&nbsp;
+                                    <router-link :v-if="edit_project" :to="{ path: '/sample/logs/'+$route.params.id }">
+                                        <button class="btn btn-warning" >See Activity Logs</button>
+                                    </router-link>
+                                    &nbsp;&nbsp;
+                                    <span v-bind:style="{ background: (status == 'Approved' ? 'green' : (status == 'Rejected' ? 'red' : 'orange')) }" style="float: right; color: white;width: 92px;padding-top: 16px;text-align:center;" class="label label-default">{{ status }}</span>
+                                </div>
+                                <br>
+                                <br>
+
+                                <span style="margin-top:20px;"></span>
+
                                 <label for="name" class="col-md-4 col-form-label text-md-right">Sample No.</label>
                                 <div class="col-md-8">
                                     <input id="sample_no" v-model="sampleData.sample_no" type="text" class="form-control" name="sample_no" required autocomplete="sample_no" autofocus>
@@ -240,135 +256,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- <div class="form-group row">
-                                <h3 class="bg-dark text-white sample-title">Approval</h3>
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Client</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.client_sign == null">
-                                        <canvas ref="mySignature" id="signature-pad1" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="clientSignatureComment" placeholder="Client Signature Comment" v-model="sampleData.clientSignatureComment" class="form-control"></textarea>
-                                    </div>
-
-                                    <div class="clear-btn" v-if="this.client_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('client_sign', $refs.mySignature, 'clientSignatureComment',$refs.clientSignatureComment )" id="save"><span> Save </span></a>
-                                        <a v-if="delete_sign" class="btn btn-danger" @click="deleteSignature('client_sign', 'clientSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.client_sign != null">
-                                        <img :src="this.client_sign"/>
-                                        <textarea placeholder="Client Signature Comment" v-model="sampleData.clientSignatureComment" class="form-control"></textarea>
-                                        <a v-if="delete_sign" class="btn btn-danger" @click="deleteSignature('client_sign', 'clientSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Client Rep</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.client_rep_sign == null">
-                                        <canvas ref="clientRepoSignature" id="signature-pad2" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="clientRepSignatureComment" placeholder="ClientRep Signature Comment" v-model="sampleData.clientRepSignatureComment" class="form-control"></textarea>
-                                    </div>
-                                    <div class="clear-btn" v-if="this.client_rep_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('client_rep_sign', $refs.clientRepoSignature, 'clientRepSignatureComment', $refs.clientRepSignatureComment)" id="save"><span> Save </span></a>\
-                                        <a class="btn btn-danger" @click="deleteSignature('client_rep_sign', 'clientRepSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.client_rep_sign != null">
-                                        <img :src="this.client_rep_sign"/>
-                                        <textarea placeholder="ClientRep Signature Comment" v-model="sampleData.clientRepSignatureComment" class="form-control"></textarea>
-                                        <a class="btn btn-danger" @click="deleteSignature('client_rep_sign', 'clientRepSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Architect</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.architect_sign == null">
-                                        <canvas ref="architectRepoSignature" id="signature-pad3" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="architectSignatureComment" placeholder="Architect Signature Comment" v-model="sampleData.architectSignatureComment" class="form-control"></textarea>
-                                    </div>
-                                    <div class="clear-btn" v-if="this.architect_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('architect_sign', $refs.architectRepoSignature, 'architectSignatureComment', $refs.architectSignatureComment)" id="save"><span> Save </span></a>
-                                        <a class="btn btn-danger" @click="deleteSignature('architect_sign', 'architectSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.architect_sign != null">
-                                        <img :src="this.architect_sign"/>
-                                        <textarea placeholder="Architect Signature Comment" v-model="sampleData.architectSignatureComment" class="form-control"></textarea>
-                                        <a class="btn btn-danger" @click="deleteSignature('architect_sign', 'architectSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Service Consult</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.service_consult_sign == null">
-                                        <canvas ref="serviceRepoSignature" id="signature-pad4" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="serviceRepoSignature" placeholder="Service Consult Signature Comment" v-model="sampleData.serviceRepoSignatureComment" class="form-control"></textarea>
-                                    </div>
-                                    <div class="clear-btn" v-if="this.service_consult_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('service_consult_sign', $refs.serviceRepoSignature, 'serviceRepoSignature', $refs.serviceRepoSignature)" id="save"><span> Save </span></a>
-                                        <a class="btn btn-danger" @click="deleteSignature('service_consult_sign', 'serviceRepoSignature')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.service_consult_sign != 'null'">
-                                        <img :src="this.service_consult_sign"/>
-                                        <textarea placeholder="ServiceRepo SignatureComment" v-model="sampleData.serviceRepoSignatureComment" class="form-control"></textarea>
-                                        <a class="btn btn-danger" @click="deleteSignature('service_consult_sign', 'serviceRepoSignature')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Structural Consult</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.structural_consult_sign == null">
-                                        <canvas ref="structuralRepoSignature" id="signature-pad5" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="structuralRepoSignatureComment" placeholder="StructuralRepo Signature Comment" v-model="sampleData.structuralRepoSignatureComment" class="form-control"></textarea>
-                                    </div>
-                                    <div class="clear-btn" v-if="this.structural_consult_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('structural_consult_sign', $refs.structuralRepoSignature, 'structuralRepoSignatureComment', $refs.structuralRepoSignatureComment)" id="save"><span> Save </span></a>
-                                        <a class="btn btn-danger" @click="deleteSignature('structural_consult_sign', 'structuralRepoSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.structural_consult_sign != null">
-                                        <img :src="this.structural_consult_sign"/>
-                                        <textarea placeholder="structuralRepoSignatureComment" v-model="sampleData.structuralRepoSignatureComment" class="form-control"></textarea>
-                                        <a class="btn btn-danger" @click="deleteSignature('structural_consult_sign', 'structuralRepoSignatureComment')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">ESD</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.esd_sign == null">
-                                        <canvas ref="esdRepoSignature" id="signature-pad6" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="esdRepoSignature" placeholder="EsdRepo Signature Comment" v-model="sampleData.esdRepoSignatureComment" class="form-control"></textarea>
-                                    </div>
-                                    <div class="clear-btn" v-if="this.esd_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('esd_sign', $refs.esdRepoSignature, 'esdRepoSignature', $refs.esdRepoSignature)" id="save"><span> Save </span></a>
-                                        <a class="btn btn-danger" @click="deleteSignature('esd_sign', 'esdRepoSignature')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.esd_sign != null">
-                                        <img :src="this.esd_sign"/>
-                                        <textarea placeholder="esdRepoSignatureComment" v-model="sampleData.esdRepoSignatureComment" class="form-control"></textarea>
-                                        <a class="btn btn-danger" @click="deleteSignature('esd_sign', 'esdRepoSignature')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">BCA</label>
-                                <div class="col-md-8">
-                                    <div class="wrapper" v-if="this.bca_sign == null">
-                                        <canvas ref="bcaRepoSignature" id="signature-pad7" class="signature-pad" width="400" height="200"></canvas>
-                                        <textarea ref="bcaRepoSignature" placeholder="CcaRepo Signature Comment" v-model="sampleData.bcaRepoSignatureComment" class="form-control"></textarea>
-                                    </div>
-                                    <div class="clear-btn" v-if="this.bca_sign == null">
-                                        <a class="btn btn-success" @click="uploadPadSignature('bca_sign', $refs.bcaRepoSignature, 'bcaRepoSignature', $refs.bcaRepoSignature)" id="save"><span> Save </span></a>
-                                        <a class="btn btn-danger" @click="deleteSignature('bca_sign', 'bcaRepoSignature')" ><span> Delete </span></a>
-                                    </div>
-                                    <div v-if="this.bca_sign != null">
-                                        <img :src="this.bca_sign"/>
-                                        <textarea placeholder="bcaRepoSignatureComment" v-model="sampleData.bcaRepoSignatureComment" class="form-control"></textarea>
-                                        <a class="btn btn-danger" @click="deleteSignature('bca_sign', 'bcaRepoSignature')" ><span> Delete </span></a>
-                                    </div>
-                                </div>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -385,6 +272,7 @@ export default {
     name: 'view-sample',
     data() {
         return {
+            status: '',
             overAllStatusColor: 'orange',
             overAllStatus: 'Pending',
             signatureStatus: [
@@ -532,6 +420,8 @@ export default {
                 this.esd_sign = this.sampleData.esd_sign
                 this.bca_sign = this.sampleData.bca_sign
                 this.sampleData.subcontractor = JSON.parse(localStorage.getItem('user')).name;
+
+                this.status = this.sampleData.status;
 
                 this.projectName = this.sampleData.project.title;
 
@@ -711,6 +601,13 @@ export default {
                 this.users = response.data.data
             });
         },
+        changeSampleStatus(status) {
+            let formData = new FormData();
+            formData.append('status', status);
+            axios.post('/api/samples/changeSampleStatus/'+this.$route.params.id, formData).then((res) => {
+                window.location.reload();
+            });
+        }
     },
     created() {
         this.getSampleDetail();

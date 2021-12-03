@@ -10,6 +10,7 @@ use DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\Activitylog\Models\Activity;
 
 class SampleController extends Controller
 {
@@ -147,6 +148,15 @@ class SampleController extends Controller
         $allRequest['created_at'] = date('Y-m-d H:i:s', strtotime($request->created_at));
         $allRequest['signatureValues'] = $request->signatureValues;
         Sample::where('id', $id)->update($allRequest);
+
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $allRequest])
+            ->log('Some Sample Fields Updated');
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Sample Updated Successfully',
@@ -174,6 +184,14 @@ class SampleController extends Controller
         }
         $allRequest['sample_type_photo'] = $sampleTypePhoto;
         Sample::where('id', $id)->update($allRequest);
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $allRequest])
+            ->log('Sample Type File Deleted Successfully');
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Files Deleted Successfully',
@@ -203,6 +221,14 @@ class SampleController extends Controller
         }
         $allRequest['sample_type'] = 1;
         Sample::where('id', $id)->update($allRequest);
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $allRequest])
+            ->log('Sample Type File Uploaded Successfully');
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Files Upload Successfully',
@@ -230,6 +256,14 @@ class SampleController extends Controller
         }
         $allRequest['tech_data_photo'] = $techDataPhoto;
         Sample::where('id', $id)->update($allRequest);
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $allRequest])
+            ->log('Tech Date File Deleted Successfully');
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Files Deleted Successfully',
@@ -259,6 +293,14 @@ class SampleController extends Controller
         }
         $allRequest['data_period'] = 1;
         Sample::where('id', $id)->update($allRequest);
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $allRequest])
+            ->log('Tech Date File Uploaded Successfully');
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Files Upload Successfully',
@@ -290,12 +332,32 @@ class SampleController extends Controller
             $destinationPath = public_path('/images');
             $image->move($destinationPath, $name);
         }
+        $labelName = '';
         $sample = Sample::where('id', $id)->first();
-        $signatureValues = json_decode($sample->signatureValues);
-        $signatureValues[$key]->signature = $name;
+        if($sample->signatureValues == '' || $sample->signatureValues == null) {
+            $signatureValues = json_decode($sample->signatureValues);
+            $signatureValues[$key]->signature = $name;
+        } else {
+            $signatureValues = [];
+            $object = new \stdClass();
+            $object->signature = $name;
+            array_push($signatureValues, $object);
+            $labelName =  $sample->label_name;
+        }
+
         // $signatureValues[$key]->comment = $request->commentValue;
         $sample->signatureValues = json_encode($signatureValues);
         $sample->save();
+
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $signatureValues])
+            ->log('Signature Signed Successfully For '.$labelName);
+        // end
+
         return response()->json([
             'status' => true,
             'message' => 'Signature Uploaded Successfully'
@@ -313,7 +375,16 @@ class SampleController extends Controller
         $signatureValues[$key]->comment = $request->comment;
         $signatureValues[$key]->status = $request->status;
         $sample->signatureValues = json_encode($signatureValues);
+        $labelName = $sample->label_name;
         $sample->save();
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $signatureValues])
+            ->log('Signature Signed Successfully For '.$labelName);
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Updated Signature Successfully'
@@ -347,7 +418,16 @@ class SampleController extends Controller
             }
         }
         $sample->signatureValues = json_encode($signatureValuesArray);
+        $labelName = $sample->label_name;
         $sample->save();
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $signatureValues])
+            ->log('Signature Signed Successfully For '.$labelName);
+        // end
         return response()->json([
             'status' => true,
             'message' => 'Signature Deleted Successfully'
@@ -441,5 +521,36 @@ class SampleController extends Controller
         // $url = env('APP_URL').'/storage/'.$fileName;
         // $url = str_replace('/public', '', $url);
         // echo "<iframe style='width:100%; height:100vh;' src='".$url."'></iframe>";
+    }
+
+    public function changeSampleStatus(Request $request, $id) {
+        $sample = Sample::where('id', $id)->first();
+        $sample->status = $request->status;
+        $sample->save();
+        // activity log
+        $anEloquentModel = Sample::find($id);
+        activity()
+            ->performedOn($anEloquentModel)
+            ->causedBy(auth()->user())
+            ->withProperties(['customProperty' => $request->all()])
+            ->log('Sample Status Changed Successfully');
+        // end
+        return response()->json([
+            'status' => true,
+            'message' => 'change sample status successfully',
+            'data' => []
+        ]);
+    }
+
+    public function seeSampleActivityLogs($id) {
+        $sampleActivityLogs = Activity::with('causer')->where('subject_id', $id)->get();
+        foreach($sampleActivityLogs as $key=>$activity) {
+            $sampleActivityLogs[$key]->time_ago = ($sampleActivityLogs[$key]->created_at)->diffForHumans();
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'activity logs successfully',
+            'data' => $sampleActivityLogs
+        ]);
     }
 }
