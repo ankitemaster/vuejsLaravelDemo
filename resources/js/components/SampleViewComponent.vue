@@ -13,8 +13,8 @@
                                     <button style="float:left; width: 150px;" @click="changeSampleStatus('In Progress')" class="btn btn-primary">In Progress</button> &nbsp;&nbsp;
                                     <button style="float:left; width: 150px;" @click="changeSampleStatus('Approved')" class="btn btn-success">Approved</button> &nbsp;&nbsp;
                                     <button style="float:left; width: 150px;" @click="changeSampleStatus('Rejected')" class="btn btn-danger">Rejected</button> &nbsp;&nbsp;
-                                    <router-link :v-if="edit_project" :to="{ path: '/sample/logs/'+$route.params.id }">
-                                        <button class="btn btn-warning" >See Activity Logs</button>
+                                    <router-link style="float:left; width: 170px;" :v-if="edit_project" :to="{ path: '/sample/logs/'+$route.params.id }">
+                                        <button style="height: 41px;" class="btn btn-warning" >See Activity Logs</button>
                                     </router-link>
                                     &nbsp;&nbsp;
                                     <span v-bind:style="{ background: (status == 'Approved' ? 'green' : (status == 'Rejected' ? 'red' : 'orange')) }" style="float: right; color: white;width: 92px;padding-top: 16px;text-align:center;" class="label label-default">{{ status }}</span>
