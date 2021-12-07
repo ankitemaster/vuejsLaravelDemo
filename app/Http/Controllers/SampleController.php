@@ -553,4 +553,5 @@ class SampleController extends Controller
             'data' => $sampleActivityLogs
         ]);
     }
+
 }

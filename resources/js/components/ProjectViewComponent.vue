@@ -6,12 +6,8 @@
                     <div class="row">
 
                         <div class="col-lg-12 col-xlg-12 col-md-12" style="text-align:right">
-                            <button class="btn btn-primary">
-                                <export-excel
-                                :data="json_data"
-                                :fields="json_fields"
-                                name="samples.xls"
-                                >Export</export-excel>
+                            <button class="btn btn-primary" @click="exportSample()">
+                                Export
                             </button><br><br>
                         </div>
 
@@ -66,6 +62,12 @@
             }
         },
         methods: {
+            exportSample() {
+                window.open(
+                    'http://18.223.248.192/projectExport?type=project&id='+this.$route.params.id,
+                    '_blank'
+                );
+            },
             getSamples() {
                 axios.get('/api/samples').then((res) => {
                     this.sampleList = res.data.data;

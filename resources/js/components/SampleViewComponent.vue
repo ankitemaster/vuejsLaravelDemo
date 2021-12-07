@@ -1,7 +1,19 @@
 <template>
     <div class="page-wrapper">
         <div class="container-fluid">
-            <h3 class="text-center text-dark projectName">Project Name: {{ projectName }}</h3>
+
+            <div class="row">
+                <div class="col-lg-6 col-xlg-6 col-md-12">
+                    <h3 class="text-center text-dark projectName" style="text-align: center;">
+                        Project Name: {{ projectName }}
+                    </h3>
+                </div>
+                <div class="col-lg-6 col-xlg-6 col-md-12" style="text-align: right;">
+                    <button @click="exportSample()" class="btn btn-primary" >Export</button> &nbsp;&nbsp;
+                </div>
+            </div>
+
+
             <form method="POST" @submit.prevent="updateSample" action="#" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-lg-6 col-xlg-6 col-md-12">
@@ -10,9 +22,9 @@
                                 <h3 class="bg-dark text-white sample-title">Sample Details</h3>
 
                                 <div class="row">
-                                    <button style="float:left; width: 150px;" @click="changeSampleStatus('In Progress')" class="btn btn-primary">In Progress</button> &nbsp;&nbsp;
-                                    <button style="float:left; width: 150px;" @click="changeSampleStatus('Approved')" class="btn btn-success">Approved</button> &nbsp;&nbsp;
-                                    <button style="float:left; width: 150px;" @click="changeSampleStatus('Rejected')" class="btn btn-danger">Rejected</button> &nbsp;&nbsp;
+                                    <a href="#" style="float:left; width: 150px;padding-top: 9px;" @click="changeSampleStatus('In Progress')" class="btn btn-primary">In Progress</a> &nbsp;&nbsp;
+                                    <a href="#" style="float:left; width: 150px;padding-top: 9px;" @click="changeSampleStatus('Approved')" class="btn btn-success">Approved</a> &nbsp;&nbsp;
+                                    <a href="#" style="float:left; width: 150px;padding-top: 9px;" @click="changeSampleStatus('Rejected')" class="btn btn-danger">Rejected</a> &nbsp;&nbsp;
                                     <router-link style="float:left; width: 170px;" :v-if="edit_project" :to="{ path: '/sample/logs/'+$route.params.id }">
                                         <button style="height: 41px;" class="btn btn-warning" >See Activity Logs</button>
                                     </router-link>
@@ -308,6 +320,12 @@ export default {
         Multiselect
     },
     methods: {
+        exportSample() {
+            window.open(
+                'http://18.223.248.192/projectExport?type=sample&id='+this.$route.params.id,
+                '_blank'
+            );
+        },
         getPermission() {
             axios.get('/api/users/permission/update_sign').then((response) => {
                 this.update_sign = response.data;

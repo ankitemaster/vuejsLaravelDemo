@@ -4,9 +4,8 @@
             <div class="row">
                 <div class="col-lg-12 col-xlg-12 col-md-12">
                     <h1>
-                        <span class="fl">Project List</span>
+                        <span class="fl" style="margin-right: 30px;">Project List</span>
                         <span class="fr">
-
                             <!-- <button class="btn btn-primary">
                                 <export-excel
                                 :data="json_data"
@@ -22,6 +21,15 @@
                         </span>
                     </h1>
                     <div class="card" style="width:100%">
+                        <div class="text-center" style="padding: 20px;">
+                            <select style="width: 250px;float: left;margin-right: 35px;" v-model="filterValue" class="form-control" @change="getProjectList()">
+                                <option value="">Select Manufacturer</option>
+                                <option v-for="(item, index) of manufacturesList" :key="index" :value="item">
+                                    {{ item }}
+                                </option>
+                            </select>
+                            <input type="text" v-model="searchValue" @keyup="getProjectList()" style="width:250px;" class="form-control" value="" placeholder="Elastic Search"/>
+                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
@@ -79,48 +87,27 @@ export default {
     },
     data() {
         return {
+            manufacturesList: [],
+            searchValue: '',
+            filterValue: '',
             projectList: [],
             view_project: false,
             add_project: false,
             edit_project: false,
             delete_project: false,
             add_user_to_project: false,
-            delete_user_to_project: false,
-            // json_fields: {
-            //     'Title': 'title',
-            //     'Description': 'description',
-            //     'Active': 'is_active',
-            //     'Complete': 'is_complete',
-            // },
-            // json_data: [
-
-            // ],
+            delete_user_to_project: false
         }
     },
     methods: {
+        getManufacturesList() {
+            axios.post('/api/projects/manufacturesList').then((res) => {
+                this.manufacturesList = res.data.data;
+            });
+        },
         getProjectList() {
-            axios.get('/api/projects').then((res) => {
+            axios.get('/api/projects?search_value='+this.searchValue+'&filter_value='+this.filterValue).then((res) => {
                 this.projectList = res.data.data;
-                // let jsonData = res.data.data;
-                // jsonData.map((item) => {
-                //     delete item.updated_at;
-                //     delete item.start_date;
-                //     delete item.end_date;
-                //     delete item.id;
-                //     delete item.created_at;
-                //     if(item.is_active == 1) {
-                //         item.is_active = true
-                //     } else {
-                //         item.is_active = false;
-                //     }
-                //     if(item.is_complete == 1) {
-                //         item.is_complete = true
-                //     } else {
-                //         item.is_complete = false;
-                //     }
-                //     return item;
-                // });
-                // this.json_data = jsonData;
             });
         },
         deleteProject(projectId) {
@@ -139,6 +126,7 @@ export default {
         }
     },
     created() {
+        this.getManufacturesList();
         this.getProjectList();
         axios.get('/api/users/permission/add_project').then((response) => {
             this.add_project = response.data;
