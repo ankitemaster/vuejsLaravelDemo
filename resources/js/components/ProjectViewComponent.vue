@@ -64,7 +64,7 @@
         methods: {
             exportSample() {
                 window.open(
-                    'http://3.145.130.148/projectExport?type=project&id='+this.$route.params.id,
+                    'http://18.118.37.62/projectExport?type=project&id='+this.$route.params.id,
                     '_blank'
                 );
             },

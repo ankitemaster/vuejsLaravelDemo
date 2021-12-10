@@ -25,7 +25,7 @@ window.axios.defaults.withCredentials = true;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-window.axios.defaults.baseURL = 'http://3.145.130.148';
+window.axios.defaults.baseURL = 'http://18.118.37.62';
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -43,3 +43,4 @@ window.axios.defaults.baseURL = 'http://3.145.130.148';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+
