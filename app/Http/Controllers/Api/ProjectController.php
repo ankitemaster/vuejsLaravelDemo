@@ -9,6 +9,7 @@ use App\Models\UserProject;
 use Illuminate\Http\Request;
 use Elasticsearch;
 use GuzzleHttp\Handler\Proxy;
+use Illuminate\Support\Facades\Http;
 use PhpParser\Builder\Function_;
 
 class ProjectController extends Controller
@@ -21,115 +22,39 @@ class ProjectController extends Controller
         } else {
             $projectIds = UserProject::where('user_id', auth()->user()->id)->pluck('project_id');
         }
-
-        // if(auth()->user()->hasRole('Super Admin')) {
-        //     $projects = Project::orderBy('id', 'desc')->get();
-        // } else if(auth()->user()->hasRole('Admin')) {
-        //     $projects = Project::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->get();
-        // } else {
-        //     $projectIds = UserProject::where('user_id', auth()->user()->id)->pluck('project_id');
-        //     $projects = Project::whereIn('id', $projectIds)->orderBy('id', 'desc')->get();
-        // }
-
-        // Sample::createIndex($shards = null, $replicas = null);
-        // Sample::putMapping($ignoreConflicts = true);
-        // Sample::addAllToIndex();
-
         if($request->search_value == '' && $request->filter_value == '') {
             $projects = Project::whereIn('id', $projectIds)->get();
         } else if($request->search_value != '' && $request->filter_value == '') {
-            $projectIds = Sample::searchByQuery(
-                [
-                    'match' =>
-                        [
-                            'manufacturer' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'title' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'description' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'model_no' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'finish' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'sample_no' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'subcontractor' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'location_used' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'specification' => $request->search_value
-                        ]
-                ]
-            )->whereIn('project_id', $projectIds);
-            $projectIds = $projectIds->pluck('id')->toArray();
+            $response = Http::get('http://localhost:9200/samples/_search?q='.$request->search_value);
+            if(count(json_decode($response)->hits->hits) > 0) {
+                $sampleIds = [];
+                foreach(json_decode($response)->hits->hits as $value) {
+                    array_push($sampleIds, $value->_source->id);
+                }
+                $projectIds = Sample::whereIn('id', $sampleIds)->whereIn('project_id', $projectIds);
+                $projectIds = $projectIds->pluck('id')->toArray();
+                $projects = Project::whereIn('id', $projectIds)->get();
+            }else {
+                $projects = [];
+            }
         } else if($request->search_value == '' && $request->filter_value != '') {
             $projectIds = Sample::where('manufacturer', 'like', '%'.$request->filter_value.'%')->whereIn('project_id', $projectIds);
             $projectIds = $projectIds->pluck('id')->toArray();
             $projects = Project::whereIn('id', $projectIds)->get();
         } else {
-            $projectIds = Sample::searchByQuery(
-                [
-                    'match' =>
-                        [
-                            'manufacturer' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'title' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'description' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'model_no' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'finish' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'sample_no' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'subcontractor' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'location_used' => $request->search_value
-                        ],
-                    'match' =>
-                        [
-                            'specification' => $request->search_value
-                        ]
-                ]
-            )->where('manufacturer', 'like', '%'.$request->filter_value.'%')->whereIn('project_id', $projectIds);
-            $projectIds = $projectIds->pluck('id')->toArray();
-            $projects = Project::whereIn('id', $projectIds)->get();
+            $response = Http::get('http://localhost:9200/samples/_search?q='.$request->search_value);
+            if(count(json_decode($response)->hits->hits) > 0) {
+                $sampleIds = [];
+                foreach(json_decode($response)->hits->hits as $value) {
+                    array_push($sampleIds, $value->_source->id);
+                }
+                $projectIds = Sample::whereIn('id', $sampleIds)->where('manufacturer', 'like', '%'.$request->filter_value.'%')->whereIn('project_id', $projectIds);
+                $projectIds = $projectIds->pluck('id')->toArray();
+                $projects = Project::whereIn('id', $projectIds)->get();
+            }else {
+                $projects = [];
+            }
         }
-
-
-
         return response()->json([
             'status' => true,
             'message' => 'Project List Get Successfully',

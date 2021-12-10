@@ -53,7 +53,7 @@
     },
     methods: {
         async submit() {
-            axios.get('http://18.223.248.192/sanctum/csrf-cookie').then(response => {
+            axios.get('http://3.145.130.148/sanctum/csrf-cookie').then(response => {
                 axios.post('/login', this.form).then(response1 => {
                     this.$store.dispatch('setUserData',response1.data.data[0]);
                     if (!response1.data.status) {
@@ -65,6 +65,7 @@
                     this.error_msg = error
                 });
             });
+
         }
     }
   }
