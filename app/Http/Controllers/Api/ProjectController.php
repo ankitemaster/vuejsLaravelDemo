@@ -14,6 +14,18 @@ use PhpParser\Builder\Function_;
 
 class ProjectController extends Controller
 {
+    public function getElasticData($searhValue) {
+        $url = "localhost:9200/samples/_search?q=".$searhValue;
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $getURL = curl_exec($ch);
+        $getInfo = json_decode($getURL, true);
+        curl_close($ch);
+        return $getInfo;
+    }
+
+
     public function index(Request $request) {
         if(auth()->user()->hasRole('Super Admin')) {
             $projectIds = Project::where('user_id', auth()->user()->id)->orderBy('id', 'desc')->pluck('id');
@@ -25,11 +37,12 @@ class ProjectController extends Controller
         if($request->search_value == '' && $request->filter_value == '') {
             $projects = Project::whereIn('id', $projectIds)->get();
         } else if($request->search_value != '' && $request->filter_value == '') {
-            $response = Http::get('http://localhost:9200/samples/_search?q='.$request->search_value);
-            if(count(json_decode($response)->hits->hits) > 0) {
+            // $response = Http::get('http://localhost:9200/samples/_search?q='.$request->search_value);
+            $response = $this->getElasticData($request->search_value);
+            if(count($response['hits']['hits']) > 0) {
                 $sampleIds = [];
-                foreach(json_decode($response)->hits->hits as $value) {
-                    array_push($sampleIds, $value->_source->id);
+                foreach($response['hits']['hits'] as $value) {
+                    array_push($sampleIds, $value['_source']['id']);
                 }
                 $projectIds = Sample::whereIn('id', $sampleIds)->whereIn('project_id', $projectIds);
                 $projectIds = $projectIds->pluck('id')->toArray();
@@ -42,11 +55,12 @@ class ProjectController extends Controller
             $projectIds = $projectIds->pluck('id')->toArray();
             $projects = Project::whereIn('id', $projectIds)->get();
         } else {
-            $response = Http::get('http://localhost:9200/samples/_search?q='.$request->search_value);
-            if(count(json_decode($response)->hits->hits) > 0) {
+            // $response = Http::get('http://localhost:9200/samples/_search?q='.$request->search_value);
+            $response = $this->getElasticData($request->search_value);
+            if(count($response->hits->hits) > 0) {
                 $sampleIds = [];
-                foreach(json_decode($response)->hits->hits as $value) {
-                    array_push($sampleIds, $value->_source->id);
+                foreach($response['hits']['hits'] as $value) {
+                    array_push($sampleIds, $value['_source']['id']);
                 }
                 $projectIds = Sample::whereIn('id', $sampleIds)->where('manufacturer', 'like', '%'.$request->filter_value.'%')->whereIn('project_id', $projectIds);
                 $projectIds = $projectIds->pluck('id')->toArray();

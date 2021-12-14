@@ -28,7 +28,7 @@
                                     {{ item }}
                                 </option>
                             </select>
-                            <input type="text" v-model="searchValue" @keyup="getProjectList()" style="width:250px;" class="form-control" value="" placeholder="Elastic Search"/>
+                            <input type="text" v-model="searchValue" @keyup="(searchValue.length > 3 || searchValue.length == 0) ? getProjectList() : ''" style="width:250px;" class="form-control" value="" placeholder="Elastic Search after 3 words"/>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
