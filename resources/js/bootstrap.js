@@ -43,4 +43,3 @@ window.axios.defaults.baseURL = 'http://18.118.37.62';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
-

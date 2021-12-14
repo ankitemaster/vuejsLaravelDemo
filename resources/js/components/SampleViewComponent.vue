@@ -1,7 +1,6 @@
 <template>
     <div class="page-wrapper">
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-lg-6 col-xlg-6 col-md-12">
                     <h3 class="text-center text-dark projectName" style="text-align: center;">
@@ -12,8 +11,6 @@
                     <button @click="exportSample()" class="btn btn-primary" >Export</button> &nbsp;&nbsp;
                 </div>
             </div>
-
-
             <form method="POST" @submit.prevent="updateSample" action="#" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-lg-6 col-xlg-6 col-md-12">
@@ -25,7 +22,7 @@
                                     <a href="#" style="float:left; width: 150px;padding-top: 9px;" @click="changeSampleStatus('In Progress')" class="btn btn-primary">In Progress</a> &nbsp;&nbsp;
                                     <a href="#" style="float:left; width: 150px;padding-top: 9px;" @click="changeSampleStatus('Approved')" class="btn btn-success">Approved</a> &nbsp;&nbsp;
                                     <a href="#" style="float:left; width: 150px;padding-top: 9px;" @click="changeSampleStatus('Rejected')" class="btn btn-danger">Rejected</a> &nbsp;&nbsp;
-                                    <router-link style="float:left; width: 170px;" :v-if="edit_project" :to="{ path: '/sample/logs/'+$route.params.id }">
+                                    <router-link style="float:left; width: 170px;" :v-if="see_logs" :to="{ path: '/sample/logs/'+$route.params.id }">
                                         <button style="height: 41px;" class="btn btn-warning" >See Activity Logs</button>
                                     </router-link>
                                     &nbsp;&nbsp;
@@ -131,6 +128,7 @@
                             </div>
                             <input id="fileUpload" @change="onPhotochange" type="file" class="sample_type_photo"  name="sample_type_photo" />
                             <input id="techDataFile" @change="ontechDataFileChange" type="file" class="tech_data_photo"  name="tech_data_photo" />
+
                             <b-modal ref="model1" @show="changeUploadUrl('sample_type')" @hide="refreshFileSelector" hide-footer id="modal-1" title="Upload File">
                                 <VueFileAgent
                                         ref="vueFileAgent"
@@ -165,7 +163,6 @@
                             </b-modal>
 
                             <b-modal ref="model2" @show="changeUploadUrl('tech_data')" @hide="refreshFileSelector" id="modal-2" title="Upload File">
-
                                 <VueFileAgent
                                         ref="vueFileAgent"
                                         :theme="'list'"
@@ -278,12 +275,14 @@
 <script>
 import moment from 'moment';
 import dataURLtoBlob from 'blueimp-canvas-to-blob';
-import swal from 'sweetalert2';
 import Multiselect from 'vue-multiselect';
+import VueFileAgentStyles from 'vue-file-agent/dist/vue-file-agent.css';
+
 export default {
     name: 'view-sample',
     data() {
         return {
+            see_logs: true,
             status: '',
             overAllStatusColor: 'orange',
             overAllStatus: 'Pending',
@@ -317,7 +316,8 @@ export default {
         }
     },
     components: {
-        Multiselect
+        Multiselect,
+        VueFileAgentStyles
     },
     methods: {
         exportSample() {
@@ -679,5 +679,11 @@ export default {
     width: 100%;
     height: 400px;
     margin-top: 20px;
+}
+.file-input {
+    z-index: 9999!important;
+}
+.file-preview {
+    z-index: -1 !important;
 }
 </style>

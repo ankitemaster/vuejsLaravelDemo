@@ -2,29 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\SampleExport;
 use App\Models\Project;
 use App\Models\Sample;
 use Illuminate\Http\Request;
-use DB;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Activitylog\Models\Activity;
 
 class SampleController extends Controller
 {
+    public function getElasticData($searhValue) {
+        $url = "18.118.37.62:9200/samples/_search?q=".$searhValue;
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $getURL = curl_exec($ch);
+        $getInfo = json_decode($getURL, true);
+        curl_close($ch);
+        return $getInfo;
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Sample::select('id', 'title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments');
+        if($request->filter_value  != '') {
+            $query = $query->where('manufacturer', 'like', '%'.$request->filter_value.'%');
+        }
+        if($request->search_value != '') {
+            $response = $this->getElasticData($request->search_value);
+            $sampleIds = [];
+            if(count($response['hits']['hits']) > 0) {
+                foreach($response['hits']['hits'] as $value) {
+                    array_push($sampleIds, $value['_source']['id']);
+                }
+            }
+            $query = $query->whereIN('id', $sampleIds);
+        }
+        $samples = $query->orderBy('id', 'desc')->get();
         return response()->json([
             'status' => true,
             'message' => 'Sample Get Successfully',
-            'data' => Sample::select('id', 'title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments')->get()
+            // 'data' => Sample::select('id', 'title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments')->get()
+            'data' => $samples
         ]);
     }
 
@@ -443,7 +464,7 @@ class SampleController extends Controller
             if(count(json_decode($sample->signatureValues)) > 0){
                 $tempArray = json_decode($sample->signatureValues);
                 foreach($tempArray as $key1=>$value1) {
-                    $tempArray[$key1]->label_name = strtolower($tempArray[$key1]->label_name);
+                    $tempArray[$key1]->label_name = $tempArray[$key1]->label_name ? strtolower($tempArray[$key1]->label_name) : '';
                 }
                 $allFieldArray = array_merge($allFieldArray, $tempArray);
             }

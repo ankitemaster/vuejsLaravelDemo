@@ -21,15 +21,6 @@
                         </span>
                     </h1>
                     <div class="card" style="width:100%">
-                        <div class="text-center" style="padding: 20px;">
-                            <select style="width: 250px;float: left;margin-right: 35px;" v-model="filterValue" class="form-control" @change="getProjectList()">
-                                <option value="">Select Manufacturer</option>
-                                <option v-for="(item, index) of manufacturesList" :key="index" :value="item">
-                                    {{ item }}
-                                </option>
-                            </select>
-                            <input type="text" v-model="searchValue" @keyup="(searchValue.length > 3 || searchValue.length == 0) ? getProjectList() : ''" style="width:250px;" class="form-control" value="" placeholder="Elastic Search after 3 words"/>
-                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
@@ -87,9 +78,6 @@ export default {
     },
     data() {
         return {
-            manufacturesList: [],
-            searchValue: '',
-            filterValue: '',
             projectList: [],
             view_project: false,
             add_project: false,
@@ -100,13 +88,8 @@ export default {
         }
     },
     methods: {
-        getManufacturesList() {
-            axios.post('/api/projects/manufacturesList').then((res) => {
-                this.manufacturesList = res.data.data;
-            });
-        },
         getProjectList() {
-            axios.get('/api/projects?search_value='+this.searchValue+'&filter_value='+this.filterValue).then((res) => {
+            axios.get('/api/projects').then((res) => {
                 this.projectList = res.data.data;
             });
         },
@@ -126,7 +109,6 @@ export default {
         }
     },
     created() {
-        this.getManufacturesList();
         this.getProjectList();
         axios.get('/api/users/permission/add_project').then((response) => {
             this.add_project = response.data;

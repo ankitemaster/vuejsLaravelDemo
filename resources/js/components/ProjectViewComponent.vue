@@ -11,6 +11,16 @@
                             </button><br><br>
                         </div>
 
+                        <div class="text-center" style="padding-bottom: 20px;">
+                            <select style="width: 250px;float: left;margin-right: 35px;" v-model="filterValue" class="form-control" @change="getSamples()">
+                                <option value="" selected>Select Manufacturer</option>
+                                <option v-for="(item, index) of manufacturesList" :key="index" :value="item">
+                                    {{ item }}
+                                </option>
+                            </select>
+                            <input type="text" v-model="searchValue" @keyup="(searchValue.length > 3 || searchValue.length == 0) ? getSamples() : ''" style="width:250px;" class="form-control" value="" placeholder="Elastic Search after 3 words"/>
+                        </div>
+
                         <div class="col-lg-3 col-xlg-4 col-md-6" v-for="(item, index) in sampleList" :key="index">
                             <div class="card">
                                 <div class="card-body">
@@ -38,6 +48,9 @@
         name: 'view',
         data() {
             return {
+                searchValue: '',
+                filterValue: '',
+                manufacturesList: [],
                 sampleList: [],
                 project_id: this.$route.params.id,
                 json_fields: {
@@ -62,6 +75,11 @@
             }
         },
         methods: {
+            getManufacturesList() {
+                axios.post('/api/projects/manufacturesList').then((res) => {
+                    this.manufacturesList = res.data.data;
+                });
+            },
             exportSample() {
                 window.open(
                     'http://18.118.37.62/projectExport?type=project&id='+this.$route.params.id,
@@ -69,7 +87,7 @@
                 );
             },
             getSamples() {
-                axios.get('/api/samples').then((res) => {
+                axios.get('/api/samples?search_value='+this.searchValue+'&filter_value='+this.filterValue).then((res) => {
                     this.sampleList = res.data.data;
                     this.json_data = res.data.data;
                 });

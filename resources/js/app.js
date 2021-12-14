@@ -27,6 +27,7 @@ Vue.use(Toasted, {
 Vue.use(excel);
 Vue.use(VueFileAgent);
 
+
 // var mixin = Vue.mixin("can", (permissionName) => {
 //     axios.get('/api/users/permission/'+permissionName).then((response) => {
 //         console.log(response.data);
