@@ -87,7 +87,7 @@
                 );
             },
             getSamples() {
-                axios.get('/api/samples?search_value='+this.searchValue+'&filter_value='+this.filterValue).then((res) => {
+                axios.get(`/api/samples?id=${this.$route.params.id}&search_value=${this.searchValue}&filter_value=${this.filterValue}`).then((res) => {
                     this.sampleList = res.data.data;
                     this.json_data = res.data.data;
                 });

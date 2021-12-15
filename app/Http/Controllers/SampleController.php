@@ -10,7 +10,7 @@ use Spatie\Activitylog\Models\Activity;
 class SampleController extends Controller
 {
     public function getElasticData($searhValue) {
-        $url = "18.118.37.62:9200/samples/_search?q=".$searhValue;
+        $url = "localhost:9200/samples/_search?q=".$searhValue;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -26,25 +26,26 @@ class SampleController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Sample::select('id', 'title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments');
+        $query = Sample::select('id', 'manufacturer','title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments');
         if($request->filter_value  != '') {
-            $query = $query->where('manufacturer', 'like', '%'.$request->filter_value.'%');
+            $filter_value = $request->filter_value;
+            $query = $query->where(function($query) use($filter_value){
+                $query->where('manufacturer', 'like', '%'.$filter_value.'%');
+            });
         }
         if($request->search_value != '') {
-            $response = $this->getElasticData($request->search_value);
-            $sampleIds = [];
-            if(count($response['hits']['hits']) > 0) {
-                foreach($response['hits']['hits'] as $value) {
-                    array_push($sampleIds, $value['_source']['id']);
+            $search_value = $request->search_value;
+            $query->where(function ($query) use ($search_value) {
+                $columns = ['id', 'manufacturer','title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments'];
+                foreach($columns as $column) {
+                    $query->orWhere($column, 'LIKE', '%' . $search_value . '%');
                 }
-            }
-            $query = $query->whereIN('id', $sampleIds);
+            });
         }
-        $samples = $query->orderBy('id', 'desc')->get();
+        $samples = $query->where('project_id', $request->id)->orderBy('id', 'desc')->get();
         return response()->json([
             'status' => true,
             'message' => 'Sample Get Successfully',
-            // 'data' => Sample::select('id', 'title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments')->get()
             'data' => $samples
         ]);
     }
@@ -464,14 +465,14 @@ class SampleController extends Controller
             if(count(json_decode($sample->signatureValues)) > 0){
                 $tempArray = json_decode($sample->signatureValues);
                 foreach($tempArray as $key1=>$value1) {
-                    $tempArray[$key1]->label_name = $tempArray[$key1]->label_name ? strtolower($tempArray[$key1]->label_name) : '';
+                    $tempArray[$key1]->label_name = isset($tempArray[$key1]->label_name) ? strtolower($tempArray[$key1]->label_name) : '';
                 }
                 $allFieldArray = array_merge($allFieldArray, $tempArray);
             }
         }
 
         $dynamicFields = collect($allFieldArray)->map(function ($name) {
-            return strtolower($name->label_name);
+            return isset($name->label_name) ? strtolower($name->label_name) : '';
         })->reject(function ($name) {
             return empty($name);
         })->toArray();
@@ -495,7 +496,7 @@ class SampleController extends Controller
             $signatureValues = json_decode($sample->signatureValues);
 
             $comments = collect($signatureValues)->map(function ($name) {
-                return $name->comment;
+                return isset($name->comment) ? $name->comment : '';
             })->reject(function ($name) {
                 return empty($name);
             });
@@ -505,7 +506,7 @@ class SampleController extends Controller
             foreach($dynamicFields as $val) {
                 $fieldValue = 'NA';
                 foreach($signatureValues as $val1) {
-                    if(strtolower(trim($val)) == strtolower(trim($val1->label_name))) {
+                    if(strtolower(trim($val)) == isset($val1->label_name) ? strtolower(trim($val1->label_name)) : '') {
                         if($val1->signature == '') {
                             $fieldValue = 'No';
                         } else {
