@@ -70,12 +70,11 @@ class SampleController extends Controller
     {
         $sample = Sample::where('project_id', $request->project_id)->orderBy('id', 'DESC')->first();
         if(isset($sample->id)) {
-            $nextId = (int)$sample->id + 1;
+            $sampleTitle = $sample->title;
+            $nextId = (int) (substr($sampleTitle, -1)) + 1;
         } else {
             $nextId = 1;
         }
-        // $statement = DB::select("SHOW TABLE STATUS LIKE 'samples'");
-        // $nextId = $statement[0]->Auto_increment;
         Sample::create([
             'title' => 'SAMP-00'.$nextId,
             'project_id' => $request->project_id,
@@ -127,11 +126,11 @@ class SampleController extends Controller
 
         $signatureValues = json_decode($sample->signatureValues);
         $signatureValuesArray = [];
-        if(count($signatureValues) > 0) {
+        if(is_array($signatureValues) && count($signatureValues) > 0) {
             foreach($signatureValues as $key=>$value) {
                 if($signatureValues[$key]->signature != '')
                 {
-                    $signatureValues[$key]->signature = $baseUrl.$signatureValues[$key]->signature;
+                    $signatureValues[$key]->signature = $signatureValues[$key]->signature;
                 } else {
                     $signatureValues[$key]->signature = '';
                 }
@@ -346,6 +345,7 @@ class SampleController extends Controller
      */
     public function signatureUpload(Request $request, $id)
     {
+        $baseUrl = url('images').'/';
         $name = "";
         $key = $request->key;
         if($request->hasFile('sign')) {
@@ -356,17 +356,8 @@ class SampleController extends Controller
         }
         $labelName = '';
         $sample = Sample::where('id', $id)->first();
-        if($sample->signatureValues == '' || $sample->signatureValues == null) {
-            $signatureValues = json_decode($sample->signatureValues);
-            $signatureValues[$key]->signature = $name;
-        } else {
-            $signatureValues = [];
-            $object = new \stdClass();
-            $object->signature = $name;
-            array_push($signatureValues, $object);
-            $labelName =  $sample->label_name;
-        }
-
+        $signatureValues = json_decode($sample->signatureValues);
+        $signatureValues[$key]->signature = $baseUrl.$name;
         // $signatureValues[$key]->comment = $request->commentValue;
         $sample->signatureValues = json_encode($signatureValues);
         $sample->save();
@@ -382,7 +373,8 @@ class SampleController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Signature Uploaded Successfully'
+            'message' => 'Signature Uploaded Successfully',
+            'data' => $signatureValues
         ]);
     }
 

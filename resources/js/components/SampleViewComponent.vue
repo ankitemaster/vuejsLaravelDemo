@@ -198,7 +198,7 @@
                             <!--- signature add more fields --->
                             <br>
                             <div v-if="add_dynamic_signature_to_sample">
-                                <div class="form-group row" v-for="(input,k) in inputs" :key="k">
+                                <div class="form-group row" v-for="(input,k) in signatureInputFields" :key="k">
                                     <label for="specification" class="col-md-4 col-form-label text-md-right">Label Name</label>
                                     <div class="col-md-8">
                                         <input v-model="input.label_name" type="text" name="label_name" class="form-control" required/>
@@ -240,7 +240,6 @@
                             <div class="form-group row">
                                 <h3 :style="'background: '+overAllStatusColor" class="text-white sample-title">{{ overAllStatus }}</h3>
                             </div>
-
                             <div class="form-group row" v-for="(input,k) in inputs" :key="k">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">{{ input.label_name }}</label>
                                 <div class="col-md-8">
@@ -310,6 +309,7 @@ export default {
             techDataPhotos: [],
             users: [],
             inputs: [],
+            signatureInputFields: [],
             update_sign: false,
             add_dynamic_signature_to_sample: false,
             delete_sign: false,
@@ -338,7 +338,7 @@ export default {
             });
         },
         add () {
-            this.inputs.push({
+            this.signatureInputFields.push({
                 label_name: '',
                 user_id: '',
                 signature: '',
@@ -347,7 +347,7 @@ export default {
             })
         },
         remove (index) {
-            this.inputs.splice(index, 1)
+            this.signatureInputFields.splice(index, 1)
         },
         removeItemOnce(arr, value) {
             var index = arr.indexOf(value);
@@ -447,12 +447,15 @@ export default {
                 if(sampleDateSignatureValues == "[]") {
                     sampleDateSignatureValues = [];
                 }
+                if(sampleDateSignatureValues == null) {
+                    sampleDateSignatureValues = [];
+                }
                 delete this.sampleData.signatureValues;
                 this.inputs = [];
                 if(sampleDateSignatureValues.length == 0) {
                     this.overAllStatus = 'Pending';
                     this.overAllStatusColor = 'orange';
-                    this.inputs.push(
+                    this.signatureInputFields.push(
                         {
                             label_name: '',
                             user_id: '',
@@ -462,6 +465,7 @@ export default {
                         }
                     );
                 } else {
+                    this.signatureInputFields = sampleDateSignatureValues;
                     this.inputs = sampleDateSignatureValues;
                     let sampleCheck = sampleDateSignatureValues.map((element) => {
                         return parseInt(element.status);
@@ -534,7 +538,7 @@ export default {
                     formData.append(key, value)
                 }
             });
-            formData.append('signatureValues', JSON.stringify(this.inputs));
+            formData.append('signatureValues', JSON.stringify(this.signatureInputFields));
             axios.post('/api/samples/'+this.$route.params.id, formData).then((res) => {
                 window.location.reload()
             });

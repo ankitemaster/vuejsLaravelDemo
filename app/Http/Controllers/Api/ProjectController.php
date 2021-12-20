@@ -114,21 +114,23 @@ class ProjectController extends Controller
             $unsigned_signature_count = 0;
             $approved_signature_count = 0;
             $rejected_signature_count = 0;
-            foreach($total_signature as $val) {
-                if($val->signature != '') {
-                    $signed_signature_count = $signed_signature_count + 1;
-                }
-                if($val->signature == '') {
-                    $unsigned_signature_count = $unsigned_signature_count + 1;
-                }
-                if($val->status == 1) {
-                    $approved_signature_count = $approved_signature_count + 1;
-                }
-                if($val->status == 2) {
-                    $rejected_signature_count = $rejected_signature_count + 1;
+            if(is_array($total_signature)) {
+                foreach($total_signature as $val) {
+                    if(isset($val->signature) && $val->signature != '') {
+                        $signed_signature_count = $signed_signature_count + 1;
+                    }
+                    if(isset($val->signature) && $val->signature == '') {
+                        $unsigned_signature_count = $unsigned_signature_count + 1;
+                    }
+                    if(isset($val->status) && $val->status == 1) {
+                        $approved_signature_count = $approved_signature_count + 1;
+                    }
+                    if(isset($val->status) && $val->status == 2) {
+                        $rejected_signature_count = $rejected_signature_count + 1;
+                    }
                 }
             }
-            $sample->total_signature = count($total_signature);
+            $sample->total_signature = is_array($total_signature) ? count($total_signature) : 0;
             $sample->signed_signature = $signed_signature_count;
             $sample->unsigned_signature = $unsigned_signature_count;
             $sample->approved_signature = $approved_signature_count;
