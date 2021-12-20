@@ -124,6 +124,7 @@ class ProjectController extends Controller
             $approved_signature_count = 0;
             $rejected_signature_count = 0;
             if(is_array($total_signature)) {
+                $sample->signatureValues = json_decode($sample->signatureValues);
                 foreach($total_signature as $val) {
                     if(isset($val->signature) && $val->signature != '') {
                         $signed_signature_count = $signed_signature_count + 1;
@@ -138,6 +139,8 @@ class ProjectController extends Controller
                         $rejected_signature_count = $rejected_signature_count + 1;
                     }
                 }
+            } else {
+                $sample->signatureValues = [];
             }
             $sample->total_signature = is_array($total_signature) ? count($total_signature) : 0;
             $sample->signed_signature = $signed_signature_count;
@@ -173,6 +176,7 @@ class ProjectController extends Controller
             }
         }
         $data['samples'] = $samples;
+
         $pdf = \PDF::loadView('exports.samples', $data);
         $pdf->getDomPDF()->setHttpContext(
             stream_context_create([

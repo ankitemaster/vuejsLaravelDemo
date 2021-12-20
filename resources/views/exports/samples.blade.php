@@ -165,6 +165,11 @@
                                 <img src="{{ $sample->tech_data_photo[0] }}" style="width: 100%; height: 300px;" />
                             </td>
                             @endif
+                            @foreach ($sample->signatureValues as $signatureValue)
+                            <td align="center" height="100%" valign="top" width="100%" >
+                                <img src="{{ $signatureValue->signature }}" style="width: 100%; height: 300px;" />
+                            </td>
+                            @endforeach
                         </tr>
                     </table>
                 </td>
