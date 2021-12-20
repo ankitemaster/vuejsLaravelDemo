@@ -96,7 +96,16 @@ class ProjectController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Manufacturer get Successfully',
-            'data' => Sample::whereNotNull('manufacturer')->orderBy('id', 'desc')->pluck('manufacturer')
+            'data' => Sample::whereNotNull('manufacturer')->groupBy('manufacturer')->orderBy('id', 'desc')->pluck('manufacturer')
+        ]);
+    }
+
+    public function subContractorsList()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Sub Contractor get Successfully',
+            'data' => Sample::whereNotNull('subcontractor')->groupBy('subcontractor')->orderBy('id', 'desc')->pluck('subcontractor')
         ]);
     }
 

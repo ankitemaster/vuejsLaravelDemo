@@ -30,11 +30,17 @@ class SampleController extends Controller
         if($request->filter_value  != '') {
             $filter_value = $request->filter_value;
             $query = $query->where(function($query) use($filter_value){
-                $query->where('manufacturer', 'like', '%'.$filter_value.'%');
+                $query->where('manufacturer', 'like', '%'.trim($filter_value).'%');
+            });
+        }
+        if($request->sub_filter_value  != '') {
+            $sub_filter_value = $request->sub_filter_value;
+            $query = $query->where(function($query) use($sub_filter_value){
+                $query->where('subcontractor', 'like', '%'.trim($sub_filter_value).'%');
             });
         }
         if($request->search_value != '') {
-            $search_value = $request->search_value;
+            $search_value = trim($request->search_value);
             $query->where(function ($query) use ($search_value) {
                 $columns = ['id', 'manufacturer','title', 'description', 'model_no', 'finish', 'client', 'client_rep', 'architech', 'service_consult', 'esd', 'bca', 'sample_url', 'overall_status', 'comments'];
                 foreach($columns as $column) {

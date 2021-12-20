@@ -215,8 +215,8 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <span>
-                                                    <i class="fas fa-minus-circle" @click="remove(k)" v-show="k || ( !k && inputs.length > 1)">Remove</i> <br>
-                                                    <i class="fas fa-plus-circle" @click="add(k)" v-show="k == inputs.length-1">Add fields</i>
+                                                    <i class="fas fa-minus-circle" @click="remove(k)" v-show="k || ( !k && signatureInputFields.length > 1)">Remove</i> <br>
+                                                    <i class="fas fa-plus-circle" @click="add(k)" v-show="k == signatureInputFields.length-1">Add fields</i>
                                                 </span>
                                             </div>
                                         </div>
@@ -236,7 +236,6 @@
                     </div>
                     <div class="col-lg-6 col-xlg-6 col-md-12">
                         <div class="row">
-
                             <div class="form-group row">
                                 <h3 :style="'background: '+overAllStatusColor" class="text-white sample-title">{{ overAllStatus }}</h3>
                             </div>
@@ -337,14 +336,14 @@ export default {
                 this.delete_sign = response.data;
             });
         },
-        add () {
+        add() {
             this.signatureInputFields.push({
                 label_name: '',
                 user_id: '',
                 signature: '',
                 comment: '',
                 status: 0
-            })
+            });
         },
         remove (index) {
             this.signatureInputFields.splice(index, 1)
@@ -450,8 +449,9 @@ export default {
                 if(sampleDateSignatureValues == null) {
                     sampleDateSignatureValues = [];
                 }
-                delete this.sampleData.signatureValues;
                 this.inputs = [];
+                delete this.sampleData.signatureValues;
+
                 if(sampleDateSignatureValues.length == 0) {
                     this.overAllStatus = 'Pending';
                     this.overAllStatusColor = 'orange';
@@ -466,7 +466,7 @@ export default {
                     );
                 } else {
                     this.signatureInputFields = sampleDateSignatureValues;
-                    this.inputs = sampleDateSignatureValues;
+                    this.inputs = [...sampleDateSignatureValues];
                     let sampleCheck = sampleDateSignatureValues.map((element) => {
                         return parseInt(element.status);
                     });

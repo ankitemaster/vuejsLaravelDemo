@@ -32,4 +32,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('samples/changeSampleStatus/{id}', [\App\Http\Controllers\SampleController::class, 'changeSampleStatus'])->name('changeSampleStatus');
     Route::get('samples/seeSampleActivityLogs/{id}', [\App\Http\Controllers\SampleController::class, 'seeSampleActivityLogs'])->name('seeSampleActivityLogs');
     Route::post('projects/manufacturesList', [\App\Http\Controllers\Api\ProjectController::class, 'manufacturesList'])->name('manufacturesList');
+    Route::post('projects/subContractorsList', [\App\Http\Controllers\Api\ProjectController::class, 'subContractorsList'])->name('subContractorsList');
+
 });

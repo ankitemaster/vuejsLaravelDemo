@@ -40,7 +40,7 @@
                                         <div :v-if="add_user_to_project" class="form-group row">
                                             <label for="role" class="col-md-4 col-form-label text-md-right">User</label>
                                             <div class="col-md-8">
-                                                  <multiselect :multiple="true" v-model="project.project_users" :options="users" placeholder="Select one" label="name" track-by="name"></multiselect>
+                                                  <multiselect :multiple="true" v-model="project.project_users" :options="users" placeholder="Select users" label="name" track-by="name"></multiselect>
                                             </div>
                                         </div>
                                         <div class="form-group row mb-0">

@@ -18,6 +18,15 @@
                                     {{ item }}
                                 </option>
                             </select>
+
+                            <select style="width: 250px;float: left;margin-right: 35px;" v-model="subFilterValue" class="form-control" @change="getSamples()">
+                                <option value="" selected>Sub Contractor</option>
+                                <option v-for="(item, index) of subContractorsList" :key="index" :value="item">
+                                    {{ item }}
+                                </option>
+                            </select>
+
+
                             <input type="text" v-model="searchValue" @keyup="(searchValue.length > 3 || searchValue.length == 0) ? getSamples() : ''" style="width:250px;" class="form-control" value="" placeholder="Elastic Search after 3 words"/>
                         </div>
 
@@ -50,7 +59,9 @@
             return {
                 searchValue: '',
                 filterValue: '',
+                subFilterValue: '',
                 manufacturesList: [],
+                subContractorsList: [],
                 sampleList: [],
                 project_id: this.$route.params.id,
                 json_fields: {
@@ -75,6 +86,11 @@
             }
         },
         methods: {
+            getSubContractorsList() {
+                axios.post('/api/projects/subContractorsList').then((res) => {
+                    this.subContractorsList = res.data.data;
+                });
+            },
             getManufacturesList() {
                 axios.post('/api/projects/manufacturesList').then((res) => {
                     this.manufacturesList = res.data.data;
@@ -87,7 +103,7 @@
                 );
             },
             getSamples() {
-                axios.get(`/api/samples?id=${this.$route.params.id}&search_value=${this.searchValue}&filter_value=${this.filterValue}`).then((res) => {
+                axios.get(`/api/samples?id=${this.$route.params.id}&search_value=${this.searchValue}&filter_value=${this.filterValue}&sub_filter_value=${this.subFilterValue}`).then((res) => {
                     this.sampleList = res.data.data;
                     this.json_data = res.data.data;
                 });
@@ -103,6 +119,8 @@
         },
         created() {
             this.getSamples();
+            this.getManufacturesList();
+            this.getSubContractorsList();
         }
     }
 </script>
